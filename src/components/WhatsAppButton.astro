@@ -2,18 +2,135 @@
 import { site } from "../data/site";
 
 const waNumber = site.phone.replace(/\D/g, "");
-const message = encodeURIComponent(`Hi, I'd like to know more about ${site.shortName}'s projects.`);
+
+function waLink(message: string) {
+  return `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
+}
+
+const defaultMessage = `Hi, I'd like to know more about ${site.shortName}'s projects.`;
+
+const quickReplies = [
+  { label: "Browse Our Projects", message: "Hi, I'd like more information about your current projects." },
+  { label: "Book A Site Visit", message: "Hi, I'd like to schedule a site visit." },
+  { label: "Payment Plans & Pricing", message: "Hi, please share pricing and payment plan options." },
+];
 ---
 
-<a
-  href={`https://wa.me/${waNumber}?text=${message}`}
-  target="_blank"
-  rel="noopener noreferrer"
-  aria-label="Chat with us on WhatsApp"
-  class="fixed bottom-6 right-6 z-[95] w-14 h-14 rounded-full bg-[#25D366] flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-200"
->
-  <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-    <path d="M12.004 2C6.478 2 2 6.478 2 12.004c0 2.12.658 4.087 1.781 5.706L2.06 22l4.462-1.688a9.943 9.943 0 005.482 1.632h.004c5.526 0 10.004-4.478 10.004-10.004C22.012 6.478 17.53 2 12.004 2zm5.83 15.834a8.31 8.31 0 01-4.478 1.28h-.003a8.32 8.32 0 01-4.246-1.166l-.305-.181-3.16 1.196.85-3.14-.198-.319a8.312 8.312 0 01-1.288-4.446c0-4.599 3.742-8.34 8.343-8.34 2.229 0 4.323.868 5.899 2.444a8.284 8.284 0 012.44 5.9c0 4.599-3.742 8.341-8.354 8.352z"/>
-  </svg>
-</a>
+<div id="wa-chat-root" class="fixed bottom-6 right-6 z-[95] flex flex-col items-end gap-4">
+  <div
+    id="wa-chat-panel"
+    role="dialog"
+    aria-label="Chat with us on WhatsApp"
+    aria-hidden="true"
+    class="hidden w-[min(360px,calc(100vw-3rem))] origin-bottom-right rounded-2xl bg-white shadow-2xl ring-1 ring-black/5 overflow-hidden"
+  >
+    <div class="flex items-center gap-3 bg-brand px-5 py-4">
+      <div class="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12.004 2C6.478 2 2 6.478 2 12.004c0 2.12.658 4.087 1.781 5.706L2.06 22l4.462-1.688a9.943 9.943 0 005.482 1.632h.004c5.526 0 10.004-4.478 10.004-10.004C22.012 6.478 17.53 2 12.004 2zm5.83 15.834a8.31 8.31 0 01-4.478 1.28h-.003a8.32 8.32 0 01-4.246-1.166l-.305-.181-3.16 1.196.85-3.14-.198-.319a8.312 8.312 0 01-1.288-4.446c0-4.599 3.742-8.34 8.343-8.34 2.229 0 4.323.868 5.899 2.444a8.284 8.284 0 012.44 5.9c0 4.599-3.742 8.341-8.354 8.352z"/>
+        </svg>
+      </div>
+      <div class="min-w-0">
+        <p class="text-white font-heading font-medium leading-tight truncate">{site.shortName}</p>
+        <p class="text-white/70 text-xs flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#25D366]"></span>
+          Typically replies within a few hours
+        </p>
+      </div>
+      <button
+        type="button"
+        id="wa-chat-close"
+        aria-label="Close chat"
+        class="ml-auto w-8 h-8 flex-shrink-0 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+      >
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="px-5 py-5 bg-surface">
+      <div class="bg-white rounded-xl rounded-tl-sm px-4 py-3 shadow-sm max-w-[85%] text-sm text-ink leading-relaxed">
+        Hi there! 👋 How can we help you today?
+      </div>
+
+      <div class="mt-4 flex flex-col gap-2">
+        {quickReplies.map((q) => (
+          <a
+            href={waLink(q.message)}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="wa-chat-link text-left text-sm font-medium text-ink bg-white border border-black/10 rounded-lg px-4 py-2.5 hover:border-brand hover:text-brand transition-colors"
+          >
+            {q.label}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <div class="p-4 bg-white border-t border-black/5">
+      <a
+        href={waLink(defaultMessage)}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="wa-chat-link flex items-center justify-center gap-2 w-full bg-[#25D366] text-white font-semibold py-3 rounded-lg hover:brightness-95 transition-[filter]"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+          <path d="M12.004 2C6.478 2 2 6.478 2 12.004c0 2.12.658 4.087 1.781 5.706L2.06 22l4.462-1.688a9.943 9.943 0 005.482 1.632h.004c5.526 0 10.004-4.478 10.004-10.004C22.012 6.478 17.53 2 12.004 2zm5.83 15.834a8.31 8.31 0 01-4.478 1.28h-.003a8.32 8.32 0 01-4.246-1.166l-.305-.181-3.16 1.196.85-3.14-.198-.319a8.312 8.312 0 01-1.288-4.446c0-4.599 3.742-8.34 8.343-8.34 2.229 0 4.323.868 5.899 2.444a8.284 8.284 0 012.44 5.9c0 4.599-3.742 8.341-8.354 8.352z"/>
+        </svg>
+        Start Chat on WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <button
+    type="button"
+    id="wa-chat-toggle"
+    aria-label="Open WhatsApp chat"
+    aria-expanded="false"
+    class="w-14 h-14 rounded-full bg-[#25D366] flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-200"
+  >
+    <svg id="wa-chat-icon-open" class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12.004 2C6.478 2 2 6.478 2 12.004c0 2.12.658 4.087 1.781 5.706L2.06 22l4.462-1.688a9.943 9.943 0 005.482 1.632h.004c5.526 0 10.004-4.478 10.004-10.004C22.012 6.478 17.53 2 12.004 2zm5.83 15.834a8.31 8.31 0 01-4.478 1.28h-.003a8.32 8.32 0 01-4.246-1.166l-.305-.181-3.16 1.196.85-3.14-.198-.319a8.312 8.312 0 01-1.288-4.446c0-4.599 3.742-8.34 8.343-8.34 2.229 0 4.323.868 5.899 2.444a8.284 8.284 0 012.44 5.9c0 4.599-3.742 8.341-8.354 8.352z"/>
+    </svg>
+    <svg id="wa-chat-icon-close" class="hidden w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+</div>
+
+<script>
+  const root = document.getElementById("wa-chat-root");
+  const panel = document.getElementById("wa-chat-panel");
+  const toggleBtn = document.getElementById("wa-chat-toggle");
+  const closeBtn = document.getElementById("wa-chat-close");
+  const iconOpen = document.getElementById("wa-chat-icon-open");
+  const iconClose = document.getElementById("wa-chat-icon-close");
+  const chatLinks = document.querySelectorAll(".wa-chat-link");
+
+  function setOpen(open: boolean) {
+    panel?.classList.toggle("hidden", !open);
+    panel?.setAttribute("aria-hidden", open ? "false" : "true");
+    toggleBtn?.setAttribute("aria-expanded", open ? "true" : "false");
+    iconOpen?.classList.toggle("hidden", open);
+    iconClose?.classList.toggle("hidden", !open);
+  }
+
+  toggleBtn?.addEventListener("click", () => {
+    const isOpen = !panel?.classList.contains("hidden");
+    setOpen(!isOpen);
+  });
+
+  closeBtn?.addEventListener("click", () => setOpen(false));
+
+  chatLinks.forEach((link) => link.addEventListener("click", () => setOpen(false)));
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!root?.contains(e.target as Node)) setOpen(false);
+  });
+</script>
