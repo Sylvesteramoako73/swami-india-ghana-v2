@@ -1,0 +1,57 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
+import { blogPosts, blogCategories, site } from "../../data/site";
+---
+
+<Layout title="Blog" description="News, awards, and construction updates from Swami India Ghana Ltd." image="https://swamiindiaghanaltd.com/wp-content/uploads/2024/06/solaris-1.webp">
+  <PageHero title="News & Updates" image="https://swamiindiaghanaltd.com/wp-content/uploads/2024/06/solaris-1.webp" />
+
+  <section class="py-28 md:py-36">
+    <div class="container-xl grid grid-cols-1 lg:grid-cols-3 gap-16">
+      <div class="lg:col-span-2 space-y-16">
+        {blogPosts.map((post) => (
+          <a href={`/blog/${post.slug}`} class="block group">
+            <div class="overflow-hidden rounded-sm mb-7 h-96">
+              <img src={post.image} alt={post.title} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" decoding="async" />
+            </div>
+            <p class="text-xs text-brand uppercase tracking-wide font-semibold mb-3">{post.category} &middot; {post.date}</p>
+            <h2 class="text-3xl font-bold mb-4 group-hover:text-brand transition-colors">{post.title}</h2>
+            <p class="text-lg text-ink-soft leading-relaxed">{post.excerpt}</p>
+            <span class="inline-block mt-5 font-semibold text-brand">Read More &rarr;</span>
+          </a>
+        ))}
+      </div>
+
+      <aside class="space-y-10">
+        <div class="bg-surface p-8 rounded-sm">
+          <h3 class="font-bold text-lg mb-5">Categories</h3>
+          <ul class="space-y-3">
+            {blogCategories.map((c) => (
+              <li class="flex justify-between text-ink-soft border-b border-black/5 pb-3">
+                <span>{c.label}</span>
+                <span>({c.count})</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="bg-ink text-white p-8 rounded-sm">
+          <h3 class="font-bold text-xl mb-3">Interested In A Project?</h3>
+          <p class="text-white/70 mb-6 leading-relaxed">Speak with our sales team about availability, pricing, and site visits.</p>
+          <ul class="space-y-3 mb-6 text-sm">
+            <li class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-brand shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h2.28a1 1 0 01.98.804l.72 3.6a1 1 0 01-.28.94l-1.6 1.6a13.5 13.5 0 006.6 6.6l1.6-1.6a1 1 0 01.94-.28l3.6.72a1 1 0 01.804.98V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z"/></svg>
+              <a href={`tel:${site.phone.replace(/\s/g, "")}`} class="hover:text-brand transition-colors">{site.phone}</a>
+            </li>
+            <li class="flex items-center gap-3">
+              <svg class="w-5 h-5 text-brand shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <a href={`mailto:${site.email}`} class="hover:text-brand transition-colors">{site.email}</a>
+            </li>
+          </ul>
+          <a href="/contact-us" class="btn-primary w-full justify-center">Contact Us</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,26 @@
+---
+import { buyerJourney } from "../../data/site";
+---
+<section class="py-28 md:py-36 bg-ink text-white">
+  <div class="container-xl">
+    <div class="section-head">
+      <div>
+        <p class="section-tag">How It Works</p>
+        <h2 class="section-title text-white">From Browsing To Move-In</h2>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
+      {buyerJourney.map((s, i) => (
+        <div class="relative">
+          <p class="text-6xl font-heading font-bold text-white/10 mb-4">{s.step}</p>
+          <h3 class="text-xl font-bold mb-3">{s.title}</h3>
+          <p class="text-white/70 leading-relaxed">{s.text}</p>
+          {i < buyerJourney.length - 1 && (
+            <svg class="hidden lg:block absolute top-6 -right-6 w-6 h-6 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

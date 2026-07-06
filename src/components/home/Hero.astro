@@ -1,0 +1,119 @@
+---
+import { site, projects } from "../../data/site";
+
+const slides = projects.slice(0, 6);
+---
+<section class="relative h-screen min-h-[700px] flex items-center overflow-hidden bg-ink">
+  {slides.map((p, i) => (
+    <img
+      src={p.heroImage}
+      alt={`${p.name} — ${p.location}`}
+      class:list={["hero-slide absolute inset-0 w-full h-full object-cover transition-opacity duration-[1500ms] ease-in-out", i === 0 ? "opacity-100" : "opacity-0"]}
+      loading="eager"
+      decoding="async"
+    />
+  ))}
+  <div class="absolute inset-0 bg-ink/35"></div>
+  <div class="absolute inset-0 bg-gradient-to-r from-ink/70 via-ink/45 to-ink/20"></div>
+
+  <div class="container-xl relative z-10 py-24">
+    <span class="reveal-mask">
+      <p class="section-tag !text-white tracking-[0.2em] drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)] [animation-delay:0ms]">Real Estate Development in Ghana</p>
+    </span>
+    <h1 class="text-5xl sm:text-6xl lg:text-[80px] font-bold leading-[1.2] max-w-5xl">
+      <span class="reveal-mask">
+        <span class="text-brand [animation-delay:120ms]">Building Ghana's</span>
+      </span>
+      <span class="reveal-mask">
+        <span class="text-white [animation-delay:240ms]">Most Trusted Addresses</span>
+      </span>
+    </h1>
+    <span class="reveal-mask mt-8">
+      <p class="max-w-2xl text-white/70 text-xl [animation-delay:380ms]">
+        Swami India Ghana Ltd designs, builds, and delivers residential and commercial developments across Accra — incorporated in Ghana since {site.incorporated}.
+      </p>
+    </span>
+    <span class="reveal-mask mt-10">
+      <div class="flex flex-wrap items-center gap-6 [animation-delay:500ms]">
+        <a href="/projects" class="btn-primary">View Our Projects</a>
+        <a href={`tel:${site.phone.replace(/\s/g, "")}`} class="flex items-center gap-3 text-white group">
+          <span class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-brand transition-colors">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h2.28a1 1 0 01.98.804l.72 3.6a1 1 0 01-.28.94l-1.6 1.6a13.5 13.5 0 006.6 6.6l1.6-1.6a1 1 0 01.94-.28l3.6.72a1 1 0 01.804.98V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z"/></svg>
+          </span>
+          <span>
+            <span class="block text-xs text-white/50 uppercase tracking-wide">Call Us</span>
+            <span class="block font-semibold">{site.phone}</span>
+          </span>
+        </a>
+      </div>
+    </span>
+  </div>
+
+  <div class="absolute bottom-8 inset-x-0 z-10">
+    <div class="container-xl flex items-end justify-between gap-6 pr-20 sm:pr-24">
+      <div class="text-white">
+        <p class="text-xs uppercase tracking-[0.2em] text-white/50 mb-1">Featured Development</p>
+        <p id="hero-caption" class="font-heading font-medium text-lg">{slides[0].name} — {slides[0].location}</p>
+      </div>
+      <div class="flex items-center gap-6">
+        <div id="hero-dots" class="hidden sm:flex items-center gap-2">
+          {slides.map((_, i) => (
+            <button type="button" data-dot={i} class:list={["h-2.5 rounded-full transition-all duration-300", i === 0 ? "w-6 bg-white" : "w-2.5 bg-white/30 hover:bg-white/60"]} aria-label={`Show slide ${i + 1}`}></button>
+          ))}
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="hero-prev" aria-label="Previous slide" class="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white hover:text-ink hover:border-white transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <button id="hero-next" aria-label="Next slide" class="w-10 h-10 rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white hover:text-ink hover:border-white transition-colors">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script define:vars={{ slides: slides.map((p) => ({ name: p.name, location: p.location })) }}>
+  const slideEls = document.querySelectorAll(".hero-slide");
+  const dots = document.querySelectorAll("#hero-dots button");
+  const caption = document.getElementById("hero-caption");
+  const prevBtn = document.getElementById("hero-prev");
+  const nextBtn = document.getElementById("hero-next");
+  let current = 0;
+  let timer;
+
+  function showSlide(index) {
+    slideEls.forEach((el, i) => {
+      el.classList.toggle("opacity-100", i === index);
+      el.classList.toggle("opacity-0", i !== index);
+    });
+    dots.forEach((d, i) => {
+      d.classList.toggle("w-6", i === index);
+      d.classList.toggle("bg-white", i === index);
+      d.classList.toggle("w-2.5", i !== index);
+      d.classList.toggle("bg-white/30", i !== index);
+    });
+    if (caption && slides[index]) {
+      caption.textContent = `${slides[index].name} — ${slides[index].location}`;
+    }
+    current = index;
+  }
+
+  function next() {
+    showSlide((current + 1) % slideEls.length);
+  }
+  function prev() {
+    showSlide((current - 1 + slideEls.length) % slideEls.length);
+  }
+  function resetTimer() {
+    clearInterval(timer);
+    timer = setInterval(next, 6000);
+  }
+
+  dots.forEach((d, i) => d.addEventListener("click", () => { showSlide(i); resetTimer(); }));
+  nextBtn?.addEventListener("click", () => { next(); resetTimer(); });
+  prevBtn?.addEventListener("click", () => { prev(); resetTimer(); });
+
+  resetTimer();
+</script>

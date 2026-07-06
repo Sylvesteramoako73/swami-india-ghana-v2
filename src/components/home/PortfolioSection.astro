@@ -1,0 +1,44 @@
+---
+import { projects } from "../../data/site";
+
+const layout = [
+  "lg:col-span-2 h-64 lg:h-72",
+  "lg:col-span-2 h-64 lg:h-72",
+  "lg:col-span-2 h-64 lg:h-72",
+  "lg:col-span-3 h-80 lg:h-[420px]",
+  "lg:col-span-3 h-80 lg:h-[420px]",
+  "lg:col-span-6 h-80 lg:h-[420px]",
+];
+---
+<section class="py-28 md:py-36 bg-surface">
+  <div class="container-xl">
+    <div class="section-head">
+      <div>
+        <p class="section-tag">Our Projects</p>
+        <h2 class="section-title">Featured Developments</h2>
+      </div>
+      <a href="/projects" class="btn-primary shrink-0">All Projects</a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6">
+      {projects.map((item, i) => (
+        <a href={`/projects/${item.slug}`} class:list={["group relative overflow-hidden rounded-sm block", layout[i]]}>
+          <img src={item.heroImage} alt={item.name} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" decoding="async" />
+          <div class="absolute inset-0 bg-ink/0 group-hover:bg-ink/50 transition-colors duration-300"></div>
+          <span class:list={["absolute top-4 right-4 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide rounded-full", item.status === "Completed" ? "bg-brand text-white" : "bg-white text-ink"]}>{item.status}</span>
+
+          <span class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <span class="w-14 h-14 rounded-full bg-brand flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            </span>
+          </span>
+
+          <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-ink/90 to-transparent p-5">
+            <h3 class="text-white text-lg font-bold">{item.name}</h3>
+            <p class="text-white/70 text-sm">{item.location}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,26 @@
+---
+import { blogPosts } from "../../data/site";
+---
+<section class="py-28 md:py-36">
+  <div class="container-xl">
+    <div class="section-head">
+      <div>
+        <p class="section-tag">Latest Updates</p>
+        <h2 class="section-title">News & Construction Updates</h2>
+      </div>
+      <a href="/blog" class="btn-primary shrink-0">View All Updates</a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+      {blogPosts.map((post) => (
+        <a href={`/blog/${post.slug}`} class="group block">
+          <div class="overflow-hidden rounded-sm mb-6 h-72">
+            <img src={post.image} alt={post.title} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" decoding="async" />
+          </div>
+          <p class="text-xs text-brand uppercase tracking-wide font-semibold mb-3">{post.category} &middot; {post.date}</p>
+          <h3 class="font-bold text-xl lg:text-2xl leading-snug group-hover:text-brand transition-colors">{post.title}</h3>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

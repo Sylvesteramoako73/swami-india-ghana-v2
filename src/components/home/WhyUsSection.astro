@@ -1,0 +1,26 @@
+---
+import { whyUsReasons } from "../../data/site";
+---
+<section class="py-28 md:py-36">
+  <div class="container-xl">
+    <div class="section-head">
+      <div>
+        <p class="section-tag">Why Us</p>
+        <h2 class="section-title">Reasons Buyers Choose SIGL</h2>
+      </div>
+      <a href="/about-us" class="btn-primary shrink-0">About SIGL</a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-16">
+      {whyUsReasons.map((r, i) => (
+        <div class="flex items-start gap-5">
+          <span class="text-5xl font-heading font-bold text-brand/20 shrink-0">0{i + 1}</span>
+          <div>
+            <h3 class="text-xl font-bold mb-3">{r.title}</h3>
+            <p class="text-ink-soft leading-relaxed">{r.text}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

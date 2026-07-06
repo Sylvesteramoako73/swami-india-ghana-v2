@@ -1,0 +1,68 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&display=swap');
+
+@theme {
+  --color-brand: #641e34;
+  --color-brand-dark: #4b1627;
+  --color-ink: #232323;
+  --color-ink-soft: #6f7172;
+  --color-surface: #f5f5f5;
+  --color-surface-2: #eaedff;
+  --font-heading: "Fraunces", serif;
+  --font-body: "Inter", sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: var(--font-body);
+    color: var(--color-ink);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 500;
+  }
+}
+
+@keyframes blinds-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@layer components {
+  .reveal-mask {
+    display: block;
+    overflow: hidden;
+  }
+  .reveal-mask > * {
+    display: block;
+    animation: blinds-in 0.85s cubic-bezier(0.65, 0, 0.15, 1) both;
+  }
+
+  .section-tag {
+    @apply inline-block text-brand font-medium uppercase text-lg md:text-[22px] mb-4;
+    font-family: var(--font-heading);
+    letter-spacing: normal;
+  }
+  .btn-primary {
+    @apply inline-flex items-center gap-2 bg-brand text-white font-semibold px-10 py-4 md:px-12 md:py-5 rounded-sm hover:bg-ink transition-colors duration-300 uppercase text-sm md:text-base tracking-wide;
+  }
+  .btn-outline {
+    @apply inline-flex items-center gap-2 border-2 border-white/50 text-white font-semibold px-10 py-4 md:px-12 md:py-5 rounded-sm hover:bg-white hover:text-ink transition-colors duration-300 uppercase text-sm md:text-base tracking-wide;
+  }
+  .container-xl {
+    @apply max-w-[1680px] mx-auto px-6 sm:px-10 lg:px-16;
+  }
+  .section-head {
+    @apply flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16 md:mb-20;
+  }
+  .section-title {
+    @apply text-4xl sm:text-5xl lg:text-[60px] font-medium leading-[1.15] max-w-3xl;
+  }
+}

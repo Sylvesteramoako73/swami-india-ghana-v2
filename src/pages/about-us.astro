@@ -1,0 +1,113 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHero from "../components/PageHero.astro";
+import TrustSection from "../components/TrustSection.astro";
+import { aboutFeatures, capabilities, mission, vision, milestones, process, site } from "../data/site";
+---
+
+<Layout title="About Us" description="Learn about Swami India Ghana Ltd — incorporated in 2013, delivering real estate developments across Accra, Ghana." image="https://swamiindiaghanaltd.com/serenity-estate/wp-content/uploads/2025/03/FIN_GATE_DAY_VIEW-scaled-1.webp">
+  <PageHero title="About Us" image="https://swamiindiaghanaltd.com/serenity-estate/wp-content/uploads/2025/03/FIN_GATE_DAY_VIEW-scaled-1.webp" />
+
+  <section class="py-28 md:py-36">
+    <div class="container-xl grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+      <div class="grid grid-cols-2 gap-5">
+        <img src="https://swamiindiaghanaltd.com/wp-content/uploads/2024/04/paradise-1.webp" alt="Paradise Estate" class="rounded-sm w-full h-72 lg:h-80 object-cover" loading="lazy" decoding="async" />
+        <img src="https://swamiindiaghanaltd.com/wp-content/uploads/2024/06/solaris-1.webp" alt="Solaris Apartments" class="rounded-sm w-full h-72 lg:h-80 object-cover mt-14" loading="lazy" decoding="async" />
+        <img src="https://swamiindiaghanaltd.com/celestia-residence/wp-content/uploads/2025/10/CelestiaResidence_gallery1.webp" alt="Celestia Residence" class="rounded-sm w-full h-72 lg:h-80 object-cover col-span-2" loading="lazy" decoding="async" />
+      </div>
+
+      <div>
+        <p class="section-tag">About {site.shortName}</p>
+        <h2 class="text-4xl md:text-5xl font-bold leading-[1.05]">Incorporated In Ghana Since {site.incorporated}</h2>
+        <p class="mt-7 text-lg text-ink-soft leading-relaxed">
+          Swami India Ghana Ltd was incorporated in {site.incorporated} as a privately owned, diversified real estate company focused on providing housing solutions to clients investing in quality properties across Ghana. Our success story includes developing some of Accra's most renowned residences and redefining luxury development throughout the capital.
+        </p>
+        <ul class="mt-9 space-y-4">
+          {aboutFeatures.map((f) => (
+            <li class="flex items-start gap-3">
+              <svg class="w-6 h-6 text-brand shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              <span class="text-ink-soft text-lg">{f}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-28 md:py-36 bg-ink text-white">
+    <div class="container-xl grid grid-cols-1 lg:grid-cols-2 gap-16">
+      <div>
+        <p class="section-tag">Our Mission</p>
+        <p class="text-2xl lg:text-3xl font-heading leading-snug text-white/90">{mission}</p>
+      </div>
+      <div>
+        <p class="section-tag">Our Vision</p>
+        <p class="text-2xl lg:text-3xl font-heading leading-snug text-white/90">{vision}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-28 md:py-36 bg-surface">
+    <div class="container-xl">
+      <div class="section-head">
+        <div>
+          <p class="section-tag">What We Do</p>
+          <h2 class="section-title">Our Core Capabilities</h2>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+        {capabilities.map((s) => (
+          <div class="bg-white p-10 lg:p-12 hover:shadow-2xl transition-all duration-300 group">
+            <div class="w-20 h-20 rounded-full bg-brand/10 flex items-center justify-center mb-8 group-hover:bg-brand transition-colors">
+              <svg class="w-8 h-8 text-brand group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l8-4v18M13 21V11l6 3v7M9 9h.01M9 12h.01M9 15h.01"/></svg>
+            </div>
+            <h3 class="text-xl lg:text-2xl font-bold mb-3">{s.title}</h3>
+            <p class="text-ink-soft leading-relaxed">{s.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-28 md:py-36">
+    <div class="container-xl">
+      <div class="section-head">
+        <div>
+          <p class="section-tag">Our Journey</p>
+          <h2 class="section-title">Milestones Since {site.incorporated}</h2>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10">
+        {milestones.map((m) => (
+          <div class="border-t-4 border-brand pt-6">
+            <p class="text-4xl font-bold text-brand mb-3">{m.year}</p>
+            <h3 class="text-xl font-bold mb-3">{m.title}</h3>
+            <p class="text-ink-soft leading-relaxed">{m.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-28 md:py-36 bg-ink text-white">
+    <div class="container-xl">
+      <div class="section-head">
+        <div>
+          <p class="section-tag">How We Work</p>
+          <h2 class="section-title text-white">From Land To Handover</h2>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
+        {process.map((p) => (
+          <div>
+            <p class="text-6xl font-heading font-bold text-white/10 mb-4">{p.step}</p>
+            <h3 class="text-xl font-bold mb-3">{p.title}</h3>
+            <p class="text-white/70 leading-relaxed">{p.text}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <TrustSection />
+</Layout>

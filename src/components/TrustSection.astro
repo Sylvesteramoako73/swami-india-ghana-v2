@@ -1,0 +1,28 @@
+---
+import { trustStats, awards } from "../data/site";
+import Marquee from "./Marquee.astro";
+---
+<section class="py-28 md:py-36">
+  <div class="container-xl">
+    <div class="section-head">
+      <div>
+        <p class="section-tag">Recognized & Verified</p>
+        <h2 class="section-title">Trusted Across Ghana's Real Estate Sector</h2>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 mb-24">
+      {trustStats.map((s) => (
+        <div class="text-center bg-surface p-10 rounded-sm">
+          <p class="text-5xl lg:text-6xl font-bold text-brand mb-2">{s.value}</p>
+          <p class="text-ink-soft">{s.label}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div>
+    <p class="section-tag container-xl block mb-8">Awards & Recognition</p>
+    <Marquee items={awards} imageClass="h-40" />
+  </div>
+</section>

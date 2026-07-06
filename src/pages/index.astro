@@ -1,0 +1,35 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Hero from "../components/home/Hero.astro";
+import SocialProofStrip from "../components/home/SocialProofStrip.astro";
+import AboutSection from "../components/home/AboutSection.astro";
+import PortfolioSection from "../components/home/PortfolioSection.astro";
+import ObjectionsSection from "../components/home/ObjectionsSection.astro";
+import WhyUsSection from "../components/home/WhyUsSection.astro";
+import HowItWorksSection from "../components/home/HowItWorksSection.astro";
+import ServicesSection from "../components/home/ServicesSection.astro";
+import PaymentBand from "../components/home/PaymentBand.astro";
+import PaymentCalculator from "../components/home/PaymentCalculator.astro";
+import TrustSection from "../components/TrustSection.astro";
+import CtaSection from "../components/CtaSection.astro";
+import BlogSection from "../components/home/BlogSection.astro";
+import FaqPreviewSection from "../components/home/FaqPreviewSection.astro";
+import { projects } from "../data/site";
+---
+
+<Layout title="Real Estate Development in Ghana" description="Swami India Ghana Ltd is a real estate developer delivering residential and commercial projects across Accra, Ghana since 2013." image={projects[0].heroImage}>
+  <Hero />
+  <SocialProofStrip />
+  <AboutSection />
+  <PortfolioSection />
+  <ObjectionsSection />
+  <WhyUsSection />
+  <HowItWorksSection />
+  <ServicesSection />
+  <PaymentBand />
+  <PaymentCalculator />
+  <TrustSection />
+  <CtaSection />
+  <BlogSection />
+  <FaqPreviewSection />
+</Layout>

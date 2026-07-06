@@ -1,0 +1,57 @@
+---
+interface Props {
+  projectName: string;
+}
+const { projectName } = Astro.props;
+---
+
+<button type="button" id="brochure-trigger" class="btn-outline w-full justify-center mt-3">
+  Request Info Pack
+</button>
+
+<div id="brochure-modal" class="hidden fixed inset-0 z-[120] items-center justify-center p-6">
+  <div id="brochure-backdrop" class="absolute inset-0 bg-ink/70"></div>
+  <div class="relative bg-white text-ink rounded-sm max-w-md w-full p-8 sm:p-10">
+    <button id="brochure-close" aria-label="Close" class="absolute top-4 right-4 text-ink-soft hover:text-ink transition-colors">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+    <p class="section-tag">Free Info Pack</p>
+    <h3 class="text-2xl font-bold mb-3">{projectName}</h3>
+    <p class="text-ink-soft mb-6 leading-relaxed">Leave your details and our sales team will email you unit types, pricing, and payment plan information for {projectName}.</p>
+
+    <form id="brochure-form" onsubmit="event.preventDefault(); document.getElementById('brochure-fields').classList.add('hidden'); document.getElementById('brochure-success').classList.remove('hidden'); this.reset();">
+      <div id="brochure-fields" class="space-y-4">
+        <input type="text" required placeholder="Your Name" class="w-full border-2 border-black/10 px-5 py-3.5 focus:outline-none focus:border-brand" />
+        <input type="email" required placeholder="Your Email" class="w-full border-2 border-black/10 px-5 py-3.5 focus:outline-none focus:border-brand" />
+        <input type="tel" required placeholder="Your Phone" class="w-full border-2 border-black/10 px-5 py-3.5 focus:outline-none focus:border-brand" />
+        <button type="submit" class="btn-primary w-full justify-center">Send Me The Info Pack</button>
+      </div>
+      <p id="brochure-success" class="hidden text-green-700 leading-relaxed">Thanks — our team will email your {projectName} info pack shortly.</p>
+    </form>
+  </div>
+</div>
+
+<script>
+  const trigger = document.getElementById("brochure-trigger");
+  const modal = document.getElementById("brochure-modal");
+  const closeBtn = document.getElementById("brochure-close");
+  const backdrop = document.getElementById("brochure-backdrop");
+
+  const open = () => {
+    modal?.classList.remove("hidden");
+    modal?.classList.add("flex");
+    document.body.style.overflow = "hidden";
+  };
+  const close = () => {
+    modal?.classList.add("hidden");
+    modal?.classList.remove("flex");
+    document.body.style.overflow = "";
+  };
+
+  trigger?.addEventListener("click", open);
+  closeBtn?.addEventListener("click", close);
+  backdrop?.addEventListener("click", close);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") close();
+  });
+</script>

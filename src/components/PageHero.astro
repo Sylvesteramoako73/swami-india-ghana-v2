@@ -1,0 +1,20 @@
+---
+interface Props {
+  title: string;
+  image?: string;
+}
+const { title, image = "https://swamiindiaghanaltd.com/wp-content/uploads/2024/06/solaris-1.webp" } = Astro.props;
+---
+
+<section class="relative py-44 md:py-52 flex items-end overflow-hidden">
+  <img src={image} alt="" class="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async" />
+  <div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/60 to-ink/40"></div>
+  <div class="relative z-10 container-xl">
+    <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-none">{title}</h1>
+    <div class="mt-6 flex items-center gap-2 text-white/70 uppercase tracking-wide">
+      <a href="/" class="hover:text-brand transition-colors">Home</a>
+      <span>/</span>
+      <span class="text-brand">{title}</span>
+    </div>
+  </div>
+</section>

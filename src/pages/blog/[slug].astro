@@ -1,0 +1,119 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import PageHero from "../../components/PageHero.astro";
+import { blogPosts, blogCategories, projects, site } from "../../data/site";
+
+export function getStaticPaths() {
+  return blogPosts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const relatedProject = projects.find((p) => post.slug.includes(p.slug.split("-")[0]));
+const relatedPosts = blogPosts.filter((p) => p.slug !== post.slug).slice(0, 3);
+---
+
+<Layout title={post.title} description={post.excerpt} image={post.image} type="article">
+  <PageHero title={post.title} image={post.image} />
+
+  <article class="py-28 md:py-36">
+    <div class="container-xl grid grid-cols-1 lg:grid-cols-3 gap-16">
+      <div class="lg:col-span-2">
+        <div class="flex items-center gap-4 mb-8 pb-8 border-b border-black/10">
+          <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
+            <img src={site.favicon} alt={site.shortName} class="w-7 h-7 object-contain" loading="lazy" decoding="async" />
+          </div>
+          <div>
+            <p class="font-semibold">{site.name}</p>
+            <p class="text-sm text-ink-soft">{post.category} &middot; {post.date}</p>
+          </div>
+        </div>
+
+        <img src={post.image} alt={post.title} class="w-full h-96 object-cover rounded-sm mb-10" loading="lazy" decoding="async" />
+
+        {post.body.map((paragraph, i) => (
+          i === 0 ? (
+            <p class="text-xl text-ink leading-relaxed mb-6 font-medium">{paragraph}</p>
+          ) : (
+            <p class="text-lg text-ink-soft leading-relaxed mb-6">{paragraph}</p>
+          )
+        ))}
+
+        <div class="mt-12 pt-8 border-t border-black/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+          <a href="/blog" class="font-semibold text-brand hover:text-ink transition-colors">&larr; Back to all updates</a>
+          <div class="flex items-center gap-3">
+            <span class="text-sm text-ink-soft mr-1">Share:</span>
+            <a href={site.social.facebook} aria-label="Share on Facebook" class="w-10 h-10 rounded-full bg-surface flex items-center justify-center hover:bg-brand hover:text-white transition-colors">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12a10 10 0 10-11.6 9.87v-6.98H7.9V12h2.5V9.8c0-2.47 1.47-3.84 3.72-3.84 1.08 0 2.2.19 2.2.19v2.42h-1.24c-1.22 0-1.6.76-1.6 1.54V12h2.72l-.44 2.89h-2.28v6.98A10 10 0 0022 12z"/></svg>
+            </a>
+            <a href={site.social.linkedin} aria-label="Share on LinkedIn" class="w-10 h-10 rounded-full bg-surface flex items-center justify-center hover:bg-brand hover:text-white transition-colors">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M6.94 5a1.94 1.94 0 11-3.88 0 1.94 1.94 0 013.88 0zM3.4 8.75h3.08V21H3.4V8.75zm5.53 0h2.95v1.68h.04c.41-.78 1.42-1.6 2.93-1.6 3.13 0 3.71 2.06 3.71 4.74V21h-3.08v-5.4c0-1.29-.02-2.95-1.8-2.95-1.8 0-2.08 1.4-2.08 2.85V21H8.93V8.75z"/></svg>
+            </a>
+            <a href={site.social.twitter} aria-label="Share on Twitter" class="w-10 h-10 rounded-full bg-surface flex items-center justify-center hover:bg-brand hover:text-white transition-colors">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 5.9c-.74.33-1.53.55-2.36.65a4.1 4.1 0 001.8-2.27c-.8.47-1.68.82-2.6 1a4.09 4.09 0 00-6.97 3.73A11.6 11.6 0 013 4.9a4.08 4.08 0 001.27 5.46 4.07 4.07 0 01-1.85-.51v.05a4.09 4.09 0 003.28 4.01 4.1 4.1 0 01-1.85.07 4.09 4.09 0 003.82 2.84A8.2 8.2 0 012 18.4a11.57 11.57 0 006.29 1.84c7.55 0 11.68-6.26 11.68-11.68 0-.18 0-.36-.01-.53A8.35 8.35 0 0022 5.9z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <aside class="space-y-10">
+        {relatedProject && (
+          <a href={`/projects/${relatedProject.slug}`} class="group block border border-black/10 rounded-sm overflow-hidden hover:shadow-lg transition-shadow">
+            <div class="h-40 overflow-hidden">
+              <img src={relatedProject.heroImage} alt={relatedProject.name} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" decoding="async" />
+            </div>
+            <div class="p-6">
+              <p class="text-xs text-brand uppercase tracking-wide font-semibold mb-2">Related Project</p>
+              <h4 class="font-bold leading-snug group-hover:text-brand transition-colors">{relatedProject.name}</h4>
+              <p class="text-sm text-ink-soft mt-1">{relatedProject.location}</p>
+            </div>
+          </a>
+        )}
+
+        <div class="bg-surface p-8 rounded-sm">
+          <h3 class="font-bold text-lg mb-5">Categories</h3>
+          <ul class="space-y-3">
+            {blogCategories.map((c) => (
+              <li class="flex justify-between text-ink-soft border-b border-black/5 pb-3">
+                <span>{c.label}</span>
+                <span>({c.count})</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="bg-ink text-white p-8 rounded-sm">
+          <h3 class="font-bold text-xl mb-3">Interested In A Project?</h3>
+          <p class="text-white/70 mb-6 leading-relaxed">Speak with our sales team about availability, pricing, and site visits.</p>
+          <a href="/contact-us" class="btn-primary w-full justify-center">Contact Us</a>
+        </div>
+      </aside>
+    </div>
+  </article>
+
+  <section class="py-24 bg-surface">
+    <div class="container-xl">
+      <div class="section-head">
+        <div>
+          <p class="section-tag">Keep Reading</p>
+          <h2 class="section-title">More Updates</h2>
+        </div>
+        <a href="/blog" class="btn-primary shrink-0">All Updates</a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+        {relatedPosts.map((p) => (
+          <a href={`/blog/${p.slug}`} class="group block">
+            <div class="overflow-hidden rounded-sm mb-5 h-56">
+              <img src={p.image} alt={p.title} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" decoding="async" />
+            </div>
+            <p class="text-xs text-brand uppercase tracking-wide font-semibold mb-2">{p.category} &middot; {p.date}</p>
+            <h3 class="font-bold text-lg leading-snug group-hover:text-brand transition-colors">{p.title}</h3>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

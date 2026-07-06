@@ -1,0 +1,84 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHero from "../components/PageHero.astro";
+import { site } from "../data/site";
+---
+
+<Layout title="Contact Us" description="Get in touch with Swami India Ghana Ltd for site visits, project availability, or partnership enquiries." image="https://swamiindiaghanaltd.com/wp-content/uploads/2024/06/solaris-1.webp">
+  <PageHero title="Contact Us" image="https://swamiindiaghanaltd.com/wp-content/uploads/2024/06/solaris-1.webp" />
+
+  <section class="py-28 md:py-36">
+    <div class="container-xl grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10 mb-24">
+      <div class="bg-surface p-10 lg:p-12 rounded-sm">
+        <div class="w-20 h-20 rounded-full bg-brand/10 flex items-center justify-center mb-8">
+          <svg class="w-8 h-8 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        </div>
+        <h3 class="font-bold text-2xl mb-3">Office Address</h3>
+        <p class="text-ink-soft text-lg">{site.address}</p>
+        <p class="text-ink-soft mt-2">{site.addressLine2}</p>
+      </div>
+      <div class="bg-surface p-10 lg:p-12 rounded-sm">
+        <div class="w-20 h-20 rounded-full bg-brand/10 flex items-center justify-center mb-8">
+          <svg class="w-8 h-8 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h3 class="font-bold text-2xl mb-3">Working Hours</h3>
+        <p class="text-ink-soft text-lg">{site.officeHours}</p>
+      </div>
+      <div class="bg-surface p-10 lg:p-12 rounded-sm">
+        <div class="w-20 h-20 rounded-full bg-brand/10 flex items-center justify-center mb-8">
+          <svg class="w-8 h-8 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        </div>
+        <h3 class="font-bold text-2xl mb-3">Call or Email</h3>
+        <p class="text-ink-soft text-lg">{site.phone}</p>
+        <p class="text-ink-soft text-lg">{site.email}</p>
+      </div>
+    </div>
+
+    <div class="container-xl grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-20 items-stretch">
+      <div>
+        <p class="section-tag">Get In Touch</p>
+        <h2 id="contact-heading" class="text-4xl md:text-5xl font-bold mb-10">Enquire About A Project</h2>
+        <form class="space-y-6" onsubmit="event.preventDefault(); this.reset(); document.getElementById('contact-success')?.classList.remove('hidden');">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <input type="text" name="name" required placeholder="Your Name" class="w-full border-2 border-black/10 px-6 py-4 focus:outline-none focus:border-brand" />
+            <input type="email" name="email" required placeholder="Your Email" class="w-full border-2 border-black/10 px-6 py-4 focus:outline-none focus:border-brand" />
+          </div>
+          <select id="project-select" name="project" class="w-full border-2 border-black/10 px-6 py-4 focus:outline-none focus:border-brand text-ink-soft bg-white">
+            <option value="">Project of Interest (optional)</option>
+            <option>Paradise Estate</option>
+            <option>Solaris Apartments</option>
+            <option>Solarium</option>
+            <option>Springfield Estate</option>
+            <option>Serenity Estate</option>
+            <option>Celestia Residence</option>
+          </select>
+          <textarea name="message" required rows="6" placeholder="Your Message" class="w-full border-2 border-black/10 px-6 py-4 focus:outline-none focus:border-brand"></textarea>
+          <button type="submit" class="btn-primary">Send Message</button>
+          <p id="contact-success" class="hidden text-green-700">Thanks — we'll get back to you shortly.</p>
+        </form>
+      </div>
+
+      <div class="h-full min-h-[480px] rounded-sm overflow-hidden">
+        <iframe
+          title="Office location map"
+          class="w-full h-full min-h-[480px] border-0"
+          loading="lazy"
+          src="https://maps.google.com/maps?q=Solaris+Apartments+Ringway+Link+Osu+Accra+Ghana&t=&z=15&ie=UTF8&iwloc=&output=embed"
+        ></iframe>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const project = params.get("project");
+    if (project) {
+      const select = document.getElementById("project-select") as HTMLSelectElement | null;
+      const match = select && Array.from(select.options).find((o) => o.value === project);
+      if (select && match) select.value = project;
+
+      const heading = document.getElementById("contact-heading");
+      if (heading) heading.textContent = `Enquire About ${project}`;
+    }
+  </script>
+</Layout>

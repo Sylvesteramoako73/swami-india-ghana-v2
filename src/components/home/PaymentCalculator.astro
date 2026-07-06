@@ -1,0 +1,100 @@
+---
+---
+<section class="py-24 md:py-32">
+  <div class="container-xl">
+    <div class="section-head">
+      <div>
+        <p class="section-tag">Plan Ahead</p>
+        <h2 class="section-title">Estimate Your Payment Plan</h2>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-16 items-start">
+      <div class="lg:col-span-3 bg-surface p-8 md:p-10 rounded-sm space-y-8">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label for="calc-price" class="font-semibold">Target Property Price</label>
+            <span class="text-brand font-semibold" id="calc-price-display">GHS 500,000</span>
+          </div>
+          <input id="calc-price" type="range" min="100000" max="3000000" step="10000" value="500000" class="w-full accent-brand" />
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label for="calc-down" class="font-semibold">Down Payment</label>
+            <span class="text-brand font-semibold" id="calc-down-display">20%</span>
+          </div>
+          <input id="calc-down" type="range" min="10" max="80" step="5" value="20" class="w-full accent-brand" />
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <label for="calc-months" class="font-semibold">Payment Period</label>
+            <span class="text-brand font-semibold" id="calc-months-display">24 months</span>
+          </div>
+          <input id="calc-months" type="range" min="6" max="60" step="6" value="24" class="w-full accent-brand" />
+        </div>
+      </div>
+
+      <div class="lg:col-span-2 bg-ink text-white p-8 md:p-10 rounded-sm">
+        <p class="text-white/50 uppercase text-xs tracking-wide font-semibold mb-6">Your Estimate</p>
+        <div class="space-y-5 mb-8">
+          <div class="flex items-center justify-between pb-5 border-b border-white/10">
+            <span class="text-white/70">Down Payment</span>
+            <span class="font-bold text-lg" id="calc-result-down">GHS 100,000</span>
+          </div>
+          <div class="flex items-center justify-between pb-5 border-b border-white/10">
+            <span class="text-white/70">Remaining Balance</span>
+            <span class="font-bold text-lg" id="calc-result-remaining">GHS 400,000</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-white/70">Est. Monthly Installment</span>
+            <span class="font-bold text-2xl text-brand" id="calc-result-monthly">GHS 16,667</span>
+          </div>
+        </div>
+        <a href="/contact-us" class="btn-primary w-full justify-center">Discuss Your Plan</a>
+        <p class="text-white/40 text-xs leading-relaxed mt-5">
+          Illustrative, interest-free estimate for planning purposes only — not a loan offer. Actual pricing and payment plans vary by project and unit type and are confirmed by our sales team.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const priceInput = document.getElementById("calc-price") as HTMLInputElement;
+  const downInput = document.getElementById("calc-down") as HTMLInputElement;
+  const monthsInput = document.getElementById("calc-months") as HTMLInputElement;
+
+  const priceDisplay = document.getElementById("calc-price-display");
+  const downDisplay = document.getElementById("calc-down-display");
+  const monthsDisplay = document.getElementById("calc-months-display");
+
+  const resultDown = document.getElementById("calc-result-down");
+  const resultRemaining = document.getElementById("calc-result-remaining");
+  const resultMonthly = document.getElementById("calc-result-monthly");
+
+  const formatCurrency = (value: number) =>
+    `GHS ${Math.round(value).toLocaleString("en-US")}`;
+
+  function recalculate() {
+    const price = Number(priceInput.value);
+    const downPct = Number(downInput.value);
+    const months = Number(monthsInput.value);
+
+    const downAmount = price * (downPct / 100);
+    const remaining = price - downAmount;
+    const monthly = remaining / months;
+
+    priceDisplay!.textContent = formatCurrency(price);
+    downDisplay!.textContent = `${downPct}%`;
+    monthsDisplay!.textContent = `${months} months`;
+
+    resultDown!.textContent = formatCurrency(downAmount);
+    resultRemaining!.textContent = formatCurrency(remaining);
+    resultMonthly!.textContent = formatCurrency(monthly);
+  }
+
+  [priceInput, downInput, monthsInput].forEach((input) => input.addEventListener("input", recalculate));
+  recalculate();
+</script>

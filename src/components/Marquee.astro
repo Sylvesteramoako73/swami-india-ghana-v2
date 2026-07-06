@@ -1,0 +1,46 @@
+---
+interface Item {
+  name: string;
+  image: string;
+}
+interface Props {
+  items: Item[];
+  imageClass?: string;
+}
+const { items, imageClass = "h-24" } = Astro.props;
+const minPerHalf = 10;
+const repeatCount = Math.max(1, Math.ceil(minPerHalf / items.length));
+const half = Array.from({ length: repeatCount }, () => items).flat();
+const track = [...half, ...half];
+const duration = `${half.length * 4}s`;
+---
+
+<div class="marquee-wrapper overflow-hidden">
+  <div class="marquee-track flex items-center gap-16" style={`animation-duration: ${duration}`}>
+    {track.map((item) => (
+      <div class="shrink-0 flex items-center justify-center" title={item.name}>
+        <img src={item.image} alt={item.name} class:list={[imageClass, "w-auto object-contain"]} loading="lazy" />
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .marquee-track {
+    width: max-content;
+    animation-name: marquee-left;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  .marquee-wrapper:hover .marquee-track {
+    animation-play-state: paused;
+  }
+  @keyframes marquee-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+</style>

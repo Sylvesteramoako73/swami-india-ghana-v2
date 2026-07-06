@@ -1,0 +1,8 @@
+---
+import { groupCompanies } from "../../data/site";
+import Marquee from "../Marquee.astro";
+---
+<div class="py-12 border-b border-black/5">
+  <p class="section-tag container-xl block mb-6 text-center md:text-left">Part Of The Swami Group</p>
+  <Marquee items={groupCompanies} imageClass="h-12 opacity-60" />
+</div>

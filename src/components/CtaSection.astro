@@ -1,0 +1,17 @@
+---
+import { site } from "../data/site";
+---
+<section class="relative py-28 overflow-hidden">
+  <img src="https://swamiindiaghanaltd.com/celestia-residence/wp-content/uploads/2025/10/CelestiaResidence_gallery1.webp" alt="" class="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async" />
+  <div class="absolute inset-0 bg-brand/90"></div>
+  <div class="container-xl relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10">
+    <div>
+      <p class="text-white/80 uppercase tracking-[0.3em] font-semibold mb-3">Ready To Find Your Home?</p>
+      <h2 class="text-white text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05]">Make An Appointment Now</h2>
+    </div>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 shrink-0">
+      <a href={`tel:${site.phone.replace(/\s/g, "")}`} class="text-white font-bold text-3xl hover:opacity-80 transition-opacity">{site.phone}</a>
+      <a href="/contact-us" class="btn-outline !border-white !text-white hover:!bg-white hover:!text-brand">Contact Us</a>
+    </div>
+  </div>
+</section>
