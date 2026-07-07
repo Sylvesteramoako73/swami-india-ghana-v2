@@ -6,10 +6,8 @@ interface Item {
 interface Props {
   items: Item[];
   imageClass?: string;
-  fit?: "contain" | "cover";
 }
-const { items, imageClass = "h-24 w-auto", fit = "contain" } = Astro.props;
-const fitClass = fit === "cover" ? "object-cover" : "object-contain";
+const { items, imageClass = "h-24" } = Astro.props;
 const minPerHalf = 10;
 const repeatCount = Math.max(1, Math.ceil(minPerHalf / items.length));
 const half = Array.from({ length: repeatCount }, () => items).flat();
@@ -21,7 +19,7 @@ const duration = `${half.length * 4}s`;
   <div class="marquee-track flex items-center gap-16" style={`animation-duration: ${duration}`}>
     {track.map((item) => (
       <div class="shrink-0 flex items-center justify-center" title={item.name}>
-        <img src={item.image} alt={item.name} class:list={[imageClass, fitClass]} loading="lazy" decoding="async" />
+        <img src={item.image} alt={item.name} class:list={[imageClass, "w-auto object-contain"]} loading="lazy" />
       </div>
     ))}
   </div>

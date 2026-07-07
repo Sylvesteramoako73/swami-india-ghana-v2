@@ -2,8 +2,6 @@
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
 import PageHero from "../../components/PageHero.astro";
 import BrochureModal from "../../components/BrochureModal.astro";
-import Marquee from "../../components/Marquee.astro";
-import AmenityIcon from "../../components/AmenityIcon.astro";
 import { projects, blogPosts, site } from "../../data/site";
 
 export function getStaticPaths() {
@@ -19,7 +17,7 @@ const otherProjects = projects.filter((p) => p.slug !== project.slug).slice(0, 3
 ---
 
 <ProjectLayout title={project.name} description={project.description} logo={project.logo} image={project.heroImage} project={project}>
-  <PageHero title={project.name} image={project.heroImage} showTitle={false} showBreadcrumb={false} tall />
+  <PageHero title={project.name} image={project.heroImage} />
 
   <section id="overview" class="py-28 md:py-36 scroll-mt-24">
     <div class="container-xl grid grid-cols-1 lg:grid-cols-3 gap-16">
@@ -29,27 +27,13 @@ const otherProjects = projects.filter((p) => p.slug !== project.slug).slice(0, 3
           <span class="text-ink-soft">{project.location}</span>
         </div>
         <p class="section-tag">{project.tagline}</p>
-        <h1 class="text-4xl md:text-5xl font-bold leading-[1.05] mb-8">{project.name}</h1>
+        <h2 class="text-4xl md:text-5xl font-bold leading-[1.05] mb-8">{project.name}</h2>
         <p class="text-lg text-ink-soft leading-relaxed">{project.description}</p>
 
-        <div id="gallery" class="mt-12 scroll-mt-24">
-          <Marquee
-            items={project.gallery.map((img) => ({ name: project.name, image: img }))}
-            imageClass="w-80 h-56 rounded-sm"
-            fit="cover"
-          />
-        </div>
-
-        <div id="amenities" class="mt-16 scroll-mt-24">
-          <h3 class="text-3xl font-bold mb-8">Amenities</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {project.amenities.map((a) => (
-              <div class="flex items-center gap-3 bg-surface px-5 py-4 rounded-sm">
-                <AmenityIcon label={a} />
-                <span class="font-medium text-ink-soft">{a}</span>
-              </div>
-            ))}
-          </div>
+        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-12 scroll-mt-24">
+          {project.gallery.map((img) => (
+            <img src={img} alt={project.name} class="rounded-sm w-full h-56 object-cover" loading="lazy" decoding="async" />
+          ))}
         </div>
 
         <h3 id="unit-types" class="text-3xl font-bold mt-16 mb-8 scroll-mt-24">Unit Types</h3>
@@ -72,13 +56,7 @@ const otherProjects = projects.filter((p) => p.slug !== project.slug).slice(0, 3
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {project.nearby.map((n) => (
                 <div class="flex items-center justify-between bg-surface px-6 py-4 rounded-sm">
-                  <span class="font-medium flex items-center gap-2.5">
-                    <svg class="w-4 h-4 text-brand shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/>
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                    {n.name}
-                  </span>
+                  <span class="font-medium">{n.name}</span>
                   <span class="text-brand font-semibold text-sm shrink-0 ml-4">{n.distance}</span>
                 </div>
               ))}
@@ -103,6 +81,18 @@ const otherProjects = projects.filter((p) => p.slug !== project.slug).slice(0, 3
           </ul>
           <a href={`/contact-us?project=${encodeURIComponent(project.name)}`} class="btn-primary w-full justify-center">Enquire Now</a>
           <BrochureModal projectName={project.name} />
+        </div>
+
+        <div id="amenities" class="mt-10 scroll-mt-24">
+          <h4 class="font-bold text-lg mb-5">Amenities</h4>
+          <ul class="space-y-3">
+            {project.amenities.map((a) => (
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-brand shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-ink-soft">{a}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {relatedPost && (
