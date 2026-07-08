@@ -2,19 +2,225 @@
 interface Props {
   title: string;
   image?: string;
+  showTitle?: boolean;
+  showBreadcrumb?: boolean;
+  tall?: boolean;
+  tagline?: string;
+  taglineColorClass?: string;
+  video?: string;
+  videoStart?: number;
+  videoEnd?: number;
 }
-const { title, image = "https://swamiindiaghanaltd.com/wp-content/uploads/2024/06/solaris-1.webp" } = Astro.props;
+const {
+  title,
+  image = "https://swamiindiaghanaltd.com/wp-content/uploads/2024/06/solaris-1.webp",
+  showTitle = true,
+  showBreadcrumb = true,
+  tall = false,
+  tagline,
+  taglineColorClass = "text-brand",
+  video,
+  videoStart = 0,
+  videoEnd,
+} = Astro.props;
+
+function getYouTubeId(input?: string): string | null {
+  if (!input) return null;
+  const match = input.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+  if (match) return match[1];
+  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+  return null;
+}
+
+const videoId = getYouTubeId(video);
 ---
 
-<section class="relative py-44 md:py-52 flex items-end overflow-hidden">
+<section
+  class:list={[
+    "relative overflow-hidden bg-ink",
+    tagline
+      ? [tall ? "min-h-[740px] md:min-h-[840px]" : "min-h-[420px] md:min-h-[480px]"]
+      : ["flex items-end", tall ? "py-52 md:py-64" : "py-44 md:py-52"],
+  ]}
+>
   <img src={image} alt="" class="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async" />
-  <div class="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/60 to-ink/40"></div>
-  <div class="relative z-10 container-xl">
-    <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-none">{title}</h1>
-    <div class="mt-6 flex items-center gap-2 text-white/70 uppercase tracking-wide">
-      <a href="/" class="hover:text-brand transition-colors">Home</a>
-      <span>/</span>
-      <span class="text-brand">{title}</span>
+
+  {videoId && (
+    <div id="hero-video-frame" class="absolute inset-0 overflow-hidden pointer-events-none">
+      <div id="hero-yt-target"></div>
+    </div>
+  )}
+
+  <div class="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/45 to-ink/25"></div>
+
+  <div class:list={[tagline ? "absolute inset-0 flex items-center" : "w-full"]}>
+    <div class="relative z-10 container-xl">
+      {showTitle && <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-none">{title}</h1>}
+      {showBreadcrumb && (
+        <div class:list={["flex items-center gap-2 text-white/70 uppercase tracking-wide", showTitle && "mt-6"]}>
+          <a href="/" class="hover:text-brand transition-colors">Home</a>
+          <span>/</span>
+          <span class="text-brand">{title}</span>
+        </div>
+      )}
     </div>
   </div>
+
+  {tagline && (
+    <div class="absolute inset-x-0 bottom-10 md:bottom-14">
+      <div class="relative z-10 container-xl">
+        <div class="tagline-anim max-w-[300px]">
+          <p class:list={["tagline-text font-montserrat font-bold uppercase tracking-wide text-2xl md:text-3xl leading-tight", taglineColorClass]}>
+            {tagline}
+          </p>
+          <div class="flex items-center mt-2">
+            <span class:list={["tagline-line h-0.5 w-14 bg-current", taglineColorClass]}></span>
+            <span class="h-px w-20 bg-white/40"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
 </section>
+
+<style>
+  @keyframes tagline-text-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+      filter: blur(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+  @keyframes tagline-line-in {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  .tagline-anim .tagline-text {
+    animation: tagline-text-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
+  }
+  .tagline-anim .tagline-line {
+    transform-origin: left;
+    animation: tagline-line-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.75s both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tagline-anim .tagline-text,
+    .tagline-anim .tagline-line {
+      animation: none;
+    }
+  }
+</style>
+
+{videoId && (
+  <style>
+    #hero-yt-target,
+    #hero-video-frame :global(iframe) {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #hero-video-frame :global(iframe) {
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    #hero-video-frame.is-ready :global(iframe) {
+      opacity: 1;
+    }
+  </style>
+)}
+
+{videoId && (
+  <script define:vars={{ videoId, videoStart, videoEnd: videoEnd ?? null }}>
+    const START_SECONDS = videoStart;
+    const END_SECONDS = videoEnd;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (!reduceMotion) {
+      const frame = document.getElementById("hero-video-frame");
+
+      function resizeIframe() {
+        const iframe = frame?.querySelector("iframe");
+        if (!frame || !iframe) return;
+        const cw = frame.clientWidth;
+        const ch = frame.clientHeight;
+        const videoRatio = 16 / 9;
+        const containerRatio = cw / ch;
+        if (containerRatio > videoRatio) {
+          iframe.style.width = cw + "px";
+          iframe.style.height = cw / videoRatio + "px";
+        } else {
+          iframe.style.height = ch + "px";
+          iframe.style.width = ch * videoRatio + "px";
+        }
+      }
+
+      function initPlayer() {
+        new window.YT.Player("hero-yt-target", {
+          videoId,
+          playerVars: {
+            autoplay: 1,
+            mute: 1,
+            controls: 0,
+            modestbranding: 1,
+            rel: 0,
+            iv_load_policy: 3,
+            disablekb: 1,
+            playsinline: 1,
+            fs: 0,
+            start: START_SECONDS,
+            ...(END_SECONDS != null ? { end: END_SECONDS } : {}),
+          },
+          events: {
+            onReady: (e) => {
+              e.target.mute();
+              e.target.setPlaybackQuality("hd1080");
+              e.target.playVideo();
+              resizeIframe();
+              frame?.classList.add("is-ready");
+              window.addEventListener("resize", resizeIframe);
+              if (END_SECONDS != null) {
+                setInterval(() => {
+                  if (typeof e.target.getCurrentTime === "function" && e.target.getCurrentTime() >= END_SECONDS) {
+                    e.target.seekTo(START_SECONDS, true);
+                    e.target.playVideo();
+                  }
+                }, 500);
+              }
+            },
+            onStateChange: (e) => {
+              if (e.data === window.YT.PlayerState.ENDED) {
+                e.target.seekTo(START_SECONDS, true);
+                e.target.playVideo();
+              }
+            },
+          },
+        });
+      }
+
+      if (window.YT && window.YT.Player) {
+        initPlayer();
+      } else {
+        const existingCallback = window.onYouTubeIframeAPIReady;
+        window.onYouTubeIframeAPIReady = () => {
+          existingCallback?.();
+          initPlayer();
+        };
+        if (!document.getElementById("youtube-iframe-api")) {
+          const tag = document.createElement("script");
+          tag.id = "youtube-iframe-api";
+          tag.src = "https://www.youtube.com/iframe_api";
+          document.head.appendChild(tag);
+        }
+      }
+    }
+  </script>
+)}

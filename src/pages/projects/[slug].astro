@@ -2,6 +2,8 @@
 import ProjectLayout from "../../layouts/ProjectLayout.astro";
 import PageHero from "../../components/PageHero.astro";
 import BrochureModal from "../../components/BrochureModal.astro";
+import Marquee from "../../components/Marquee.astro";
+import AmenityIcon from "../../components/AmenityIcon.astro";
 import { projects, blogPosts, site } from "../../data/site";
 
 export function getStaticPaths() {
@@ -14,26 +16,66 @@ export function getStaticPaths() {
 const { project } = Astro.props;
 const relatedPost = blogPosts.find((p) => p.slug.includes(project.slug.split("-")[0]));
 const otherProjects = projects.filter((p) => p.slug !== project.slug).slice(0, 3);
+
+function getYouTubeId(input?: string): string | null {
+  if (!input) return null;
+  const match = input.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+  if (match) return match[1];
+  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+  return null;
+}
+
+const constructionUpdates = project.constructionUpdates?.map((u) => ({
+  ...u,
+  videoId: getYouTubeId(u.video),
+}));
 ---
 
-<ProjectLayout title={project.name} description={project.description} logo={project.logo} image={project.heroImage} project={project}>
-  <PageHero title={project.name} image={project.heroImage} />
+<ProjectLayout title={project.name} description={project.description} logo={project.logo} image={project.heroImage} project={project} theme={project.theme}>
+  <PageHero title={project.name} image={project.heroImage} showTitle={false} showBreadcrumb={false} tall tagline={project.tagline} taglineColorClass={project.taglineColorClass ?? "text-[var(--project-accent,#ca9f45)]"} video={project.heroVideo} videoStart={project.heroVideoStart} videoEnd={project.heroVideoEnd} />
 
-  <section id="overview" class="py-28 md:py-36 scroll-mt-24">
+  <section id="overview" class="py-12 md:py-16 scroll-mt-24">
     <div class="container-xl grid grid-cols-1 lg:grid-cols-3 gap-16">
       <div class="lg:col-span-2">
         <div class="flex items-center gap-4 mb-6">
-          <span class:list={["px-4 py-1.5 text-xs font-semibold uppercase tracking-wide rounded-full", project.status === "Completed" ? "bg-brand text-white" : "bg-surface text-ink"]}>{project.status}</span>
+          <span class:list={["px-4 py-1.5 text-xs font-semibold uppercase tracking-wide rounded-full", project.status === "Completed" ? "bg-[var(--project-cta,#ca9f45)] text-[var(--project-cta-on,#1a1a1a)]" : "bg-surface text-ink"]}>{project.status}</span>
           <span class="text-ink-soft">{project.location}</span>
         </div>
-        <p class="section-tag">{project.tagline}</p>
-        <h2 class="text-4xl md:text-5xl font-bold leading-[1.05] mb-8">{project.name}</h2>
+        <h1 class="sr-only">{project.name}</h1>
+        {project.logo && (
+          <img src={project.logo} alt={`${project.name} — ${project.tagline}`} class:list={[project.logoClass ?? "h-96 md:h-[28rem] w-auto -mb-8 md:-mb-12"]} loading="lazy" decoding="async" />
+        )}
         <p class="text-lg text-ink-soft leading-relaxed">{project.description}</p>
 
-        <div id="gallery" class="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-12 scroll-mt-24">
-          {project.gallery.map((img) => (
-            <img src={img} alt={project.name} class="rounded-sm w-full h-56 object-cover" loading="lazy" decoding="async" />
-          ))}
+        <div id="gallery" class="mt-12 scroll-mt-24">
+          <Marquee
+            items={project.gallery.map((img) => ({ name: project.name, image: img }))}
+            imageClass="w-80 h-56 rounded-sm"
+            fit="cover"
+          />
+        </div>
+
+        <div id="amenities" class="mt-16 scroll-mt-24">
+          <h3 class="text-3xl font-bold mb-8">Amenities</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {project.amenities.map((a) => (
+              <div class="flex items-center gap-3 bg-surface px-5 py-4 rounded-sm">
+                <AmenityIcon label={a} />
+                <span class="font-medium text-ink-soft">{a}</span>
+              </div>
+            ))}
+          </div>
+
+          {project.neighborhoodStats && (
+            <div class="mt-4 bg-[var(--project-cta,#ca9f45)] rounded-sm px-8 py-10 grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
+              {project.neighborhoodStats.map((s) => (
+                <div>
+                  <p class="text-4xl md:text-5xl font-bold text-[var(--project-cta-on,#1a1a1a)]">{s.value}</p>
+                  <p class="text-[var(--project-cta-on,#1a1a1a)]/70 text-sm font-semibold mt-2">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <h3 id="unit-types" class="text-3xl font-bold mt-16 mb-8 scroll-mt-24">Unit Types</h3>
@@ -56,8 +98,14 @@ const otherProjects = projects.filter((p) => p.slug !== project.slug).slice(0, 3
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {project.nearby.map((n) => (
                 <div class="flex items-center justify-between bg-surface px-6 py-4 rounded-sm">
-                  <span class="font-medium">{n.name}</span>
-                  <span class="text-brand font-semibold text-sm shrink-0 ml-4">{n.distance}</span>
+                  <span class="font-medium flex items-center gap-2.5">
+                    <svg class="w-4 h-4 text-[var(--project-accent,#ca9f45)] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    {n.name}
+                  </span>
+                  <span class="text-[var(--project-accent,#ca9f45)] font-semibold text-sm shrink-0 ml-4">{n.distance}</span>
                 </div>
               ))}
             </div>
@@ -71,28 +119,16 @@ const otherProjects = projects.filter((p) => p.slug !== project.slug).slice(0, 3
           <p class="text-white/70 mb-8 leading-relaxed">Speak with our sales team for availability, pricing, and to arrange a site visit.</p>
           <ul class="space-y-4 mb-8 text-sm">
             <li class="flex items-center gap-3">
-              <svg class="w-5 h-5 text-brand shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h2.28a1 1 0 01.98.804l.72 3.6a1 1 0 01-.28.94l-1.6 1.6a13.5 13.5 0 006.6 6.6l1.6-1.6a1 1 0 01.94-.28l3.6.72a1 1 0 01.804.98V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z"/></svg>
-              <a href={`tel:${site.phone.replace(/\s/g, "")}`} class="hover:text-brand transition-colors">{site.phone}</a>
+              <svg class="w-5 h-5 text-[var(--project-accent,#ca9f45)] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h2.28a1 1 0 01.98.804l.72 3.6a1 1 0 01-.28.94l-1.6 1.6a13.5 13.5 0 006.6 6.6l1.6-1.6a1 1 0 01.94-.28l3.6.72a1 1 0 01.804.98V19a2 2 0 01-2 2h-1C9.163 21 3 14.837 3 7V5z"/></svg>
+              <a href={`tel:${site.phone.replace(/\s/g, "")}`} class="hover:text-[var(--project-accent,#ca9f45)] transition-colors">{site.phone}</a>
             </li>
             <li class="flex items-center gap-3">
-              <svg class="w-5 h-5 text-brand shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-              <a href={`mailto:${site.email}`} class="hover:text-brand transition-colors">{site.email}</a>
+              <svg class="w-5 h-5 text-[var(--project-accent,#ca9f45)] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <a href={`mailto:${site.email}`} class="hover:text-[var(--project-accent,#ca9f45)] transition-colors">{site.email}</a>
             </li>
           </ul>
-          <a href={`/contact-us?project=${encodeURIComponent(project.name)}`} class="btn-primary w-full justify-center">Enquire Now</a>
+          <a href={`/contact-us?project=${encodeURIComponent(project.name)}`} class="inline-flex items-center justify-center gap-2 w-full bg-[var(--project-cta,#ca9f45)] text-[var(--project-cta-on,#1a1a1a)] font-semibold px-10 py-4 rounded-sm hover:bg-[var(--project-cta-dark,#a27f37)] transition-colors duration-300 uppercase text-sm tracking-wide">Enquire Now</a>
           <BrochureModal projectName={project.name} />
-        </div>
-
-        <div id="amenities" class="mt-10 scroll-mt-24">
-          <h4 class="font-bold text-lg mb-5">Amenities</h4>
-          <ul class="space-y-3">
-            {project.amenities.map((a) => (
-              <li class="flex items-start gap-3">
-                <svg class="w-5 h-5 text-brand shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                <span class="text-ink-soft">{a}</span>
-              </li>
-            ))}
-          </ul>
         </div>
 
         {relatedPost && (
@@ -101,8 +137,8 @@ const otherProjects = projects.filter((p) => p.slug !== project.slug).slice(0, 3
               <img src={relatedPost.image} alt={relatedPost.title} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" decoding="async" />
             </div>
             <div class="p-6">
-              <p class="text-xs text-brand uppercase tracking-wide font-semibold mb-2">Latest Update</p>
-              <h4 class="font-bold leading-snug group-hover:text-brand transition-colors">{relatedPost.title}</h4>
+              <p class="text-xs text-[var(--project-accent,#ca9f45)] uppercase tracking-wide font-semibold mb-2">Latest Update</p>
+              <h4 class="font-bold leading-snug group-hover:text-[var(--project-accent,#ca9f45)] transition-colors">{relatedPost.title}</h4>
             </div>
           </a>
         )}
@@ -110,14 +146,74 @@ const otherProjects = projects.filter((p) => p.slug !== project.slug).slice(0, 3
     </div>
   </section>
 
+  {constructionUpdates && (
+    <section class="py-24" style="background-color:#f6f1e7">
+      <div class="container-xl">
+        <h2 class="text-3xl md:text-4xl font-bold leading-tight mb-6">Status Of<br />Construction</h2>
+        <div id="construction-tabs" class="flex flex-wrap gap-8 mb-8 text-sm font-bold uppercase tracking-wide">
+          {constructionUpdates.map((u, i) => (
+            <button
+              type="button"
+              data-index={i}
+              class:list={["construction-tab pb-1.5 border-b-2 transition-colors", i === 0 ? "border-[var(--project-accent,#ca9f45)] text-ink" : "border-transparent text-ink-soft/50 hover:text-ink-soft"]}
+            >
+              {u.date}
+            </button>
+          ))}
+        </div>
+        <div class="relative rounded-sm overflow-hidden shadow-lg aspect-video max-w-5xl">
+          <iframe
+            id="construction-video"
+            class="absolute inset-0 w-full h-full"
+            src={`https://www.youtube-nocookie.com/embed/${constructionUpdates[0].videoId}?rel=0&modestbranding=1`}
+            title="Construction update video"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+          <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-ink/85 via-ink/20 to-transparent p-6 md:p-8 pointer-events-none">
+            <p class="text-white text-2xl md:text-3xl font-bold">Construction Update</p>
+            <p class="text-white/80 text-sm md:text-base uppercase tracking-wide mt-1">For The Month Of</p>
+            <span id="construction-caption-date" class="inline-block mt-3 bg-[var(--project-cta,#ca9f45)] text-[var(--project-cta-on,#1a1a1a)] text-xs md:text-sm font-bold uppercase px-4 py-1.5 rounded-sm tracking-wide">
+              {constructionUpdates[0].label}
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script define:vars={{ updates: constructionUpdates }}>
+      const tabs = document.querySelectorAll(".construction-tab");
+      const videoFrame = document.getElementById("construction-video");
+      const dateLabel = document.getElementById("construction-caption-date");
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const i = Number(tab.dataset.index);
+          const update = updates[i];
+          if (!update) return;
+          videoFrame.src = `https://www.youtube-nocookie.com/embed/${update.videoId}?rel=0&modestbranding=1`;
+          dateLabel.textContent = update.label;
+          tabs.forEach((t, idx) => {
+            const active = idx === i;
+            t.classList.toggle("border-[var(--project-accent,#ca9f45)]", active);
+            t.classList.toggle("text-ink", active);
+            t.classList.toggle("border-transparent", !active);
+            t.classList.toggle("text-ink-soft/50", !active);
+          });
+        });
+      });
+    </script>
+  )}
+
   <section class="py-24 bg-surface">
     <div class="container-xl">
       <div class="section-head">
         <div>
-          <p class="section-tag">Explore More</p>
+          <p class="section-tag !text-[var(--project-accent,#ca9f45)]">Explore More</p>
           <h2 class="section-title">Other Developments</h2>
         </div>
-        <a href="/projects" class="btn-primary shrink-0">All Projects</a>
+        <a href="/projects" class="inline-flex items-center gap-2 bg-[var(--project-cta,#ca9f45)] text-[var(--project-cta-on,#1a1a1a)] font-semibold px-10 py-4 md:px-12 md:py-5 rounded-sm hover:bg-[var(--project-cta-dark,#a27f37)] transition-colors duration-300 uppercase text-sm md:text-base tracking-wide shrink-0">All Projects</a>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">

@@ -8,6 +8,7 @@ interface Props {
 const { name, logo } = Astro.props;
 
 const projectNav = [
+  { label: "Home", href: "/" },
   { label: "Overview", href: "#overview" },
   { label: "Gallery", href: "#gallery" },
   { label: "Unit Types", href: "#unit-types" },
@@ -15,35 +16,76 @@ const projectNav = [
 ];
 ---
 
-<header class="fixed top-0 inset-x-0 z-50 bg-transparent">
-  <div class="absolute inset-0 -z-10 bg-gradient-to-b from-black/55 via-black/25 to-transparent pointer-events-none"></div>
+<header id="project-header" class="fixed top-0 inset-x-0 z-50 bg-transparent transition-colors duration-300">
+  <div id="project-header-glow" class="absolute inset-0 -z-10 bg-gradient-to-b from-black/55 via-black/25 to-transparent pointer-events-none transition-opacity duration-300"></div>
   <div class="main-nav">
-    <div class="container-xl flex items-center justify-between py-4">
+    <div id="project-header-inner" class="container-xl flex items-center justify-between py-4 transition-[padding] duration-300">
       <a href="/" class="flex items-center gap-3 shrink-0">
-        <span class="hidden sm:flex items-center gap-2 text-white/60 text-xs uppercase tracking-wide border-r border-white/20 pr-3 mr-1 hover:text-brand transition-colors">
+        <span class="ph-link hidden sm:flex items-center gap-2 text-white/60 text-xs uppercase tracking-wide border-r border-white/20 pr-3 mr-1 transition-colors">
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
           {site.shortName}
         </span>
         {logo ? (
           <img src={logo} alt={name} class="h-10 md:h-12 w-auto" />
         ) : (
-          <span class="text-white text-2xl font-bold font-heading">{name}</span>
+          <span class="ph-link text-white text-2xl font-bold font-heading">{name}</span>
         )}
       </a>
 
       <nav class="hidden lg:flex items-center gap-9 ml-auto mr-9">
         {projectNav.map((item) => (
-          <a href={item.href} class="font-bold text-sm uppercase tracking-wide text-white hover:text-brand transition-colors">{item.label}</a>
+          <a href={item.href} class="ph-link font-bold text-sm uppercase tracking-wide text-white transition-colors">{item.label}</a>
         ))}
       </nav>
 
-      <a href={`/contact-us?project=${encodeURIComponent(name)}`} class="hidden lg:inline-flex items-center gap-2 border-2 border-white/40 text-white font-semibold px-7 py-3 rounded-full hover:bg-brand hover:border-brand transition-colors duration-300 uppercase text-sm tracking-wide shrink-0">
+      <a href={`/contact-us?project=${encodeURIComponent(name)}`} id="ph-enquire" class="hidden lg:inline-flex items-center gap-2 bg-[var(--project-cta,#ca9f45)] text-[var(--project-cta-on,#1a1a1a)] font-semibold px-7 py-3 rounded-full transition-colors duration-300 uppercase text-sm tracking-wide shrink-0">
         Enquire Now
       </a>
 
-      <button id="menu-overlay-btn" aria-label="Open menu" class="p-2 text-white hover:text-brand transition-colors shrink-0">
+      <button id="menu-overlay-btn" aria-label="Open menu" class="ph-link p-2 text-white transition-colors shrink-0">
         <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
     </div>
   </div>
 </header>
+
+<style>
+  .ph-link:hover {
+    color: var(--project-accent, #ca9f45);
+  }
+  header.is-scrolled {
+    background-color: var(--project-accent, #ca9f45);
+  }
+  header.is-scrolled .ph-link {
+    color: var(--project-on-accent, var(--color-ink));
+  }
+  header.is-scrolled .ph-link:hover {
+    color: color-mix(in srgb, var(--project-on-accent, var(--color-ink)) 70%, transparent);
+  }
+  header.is-scrolled #ph-enquire {
+    background-color: var(--color-ink);
+    color: white;
+  }
+  header.is-scrolled #ph-enquire:hover {
+    background-color: black;
+  }
+</style>
+
+<script>
+  const header = document.getElementById("project-header");
+  const glow = document.getElementById("project-header-glow");
+  const inner = document.getElementById("project-header-inner");
+
+  function onScroll() {
+    const scrolled = window.scrollY > 80;
+    header?.classList.toggle("is-scrolled", scrolled);
+    header?.classList.toggle("bg-transparent", !scrolled);
+    header?.classList.toggle("shadow-lg", scrolled);
+    glow?.classList.toggle("opacity-0", scrolled);
+    inner?.classList.toggle("py-2.5", scrolled);
+    inner?.classList.toggle("py-4", !scrolled);
+  }
+
+  document.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+</script>

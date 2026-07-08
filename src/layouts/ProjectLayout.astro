@@ -13,12 +13,21 @@ interface ProjectData {
   unitTypes: { name: string }[];
 }
 
+interface ProjectTheme {
+  accent: string;
+  onAccent: string;
+  cta: string;
+  ctaDark: string;
+  ctaOn: string;
+}
+
 interface Props {
   title: string;
   description?: string;
   logo?: string;
   image?: string;
   project?: ProjectData;
+  theme?: ProjectTheme;
 }
 
 const {
@@ -27,7 +36,12 @@ const {
   logo,
   image = site.logo,
   project,
+  theme,
 } = Astro.props;
+
+const themeStyle = theme
+  ? `--project-accent:${theme.accent};--project-on-accent:${theme.onAccent};--project-cta:${theme.cta};--project-cta-dark:${theme.ctaDark};--project-cta-on:${theme.ctaOn};`
+  : undefined;
 
 const origin = Astro.site ?? new URL(Astro.url.origin);
 const canonicalURL = new URL(Astro.url.pathname, origin);
@@ -78,7 +92,7 @@ const projectSchema = project && {
 
     {projectSchema && <script type="application/ld+json" set:html={JSON.stringify(projectSchema)} />}
   </head>
-  <body class="bg-white text-ink">
+  <body class="bg-white text-ink" style={themeStyle}>
     <ProjectHeader name={title} logo={logo} />
     <MenuOverlay />
     <main>
