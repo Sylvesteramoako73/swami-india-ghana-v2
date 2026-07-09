@@ -1,7 +1,12 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
+import BlogCard from "../../components/BlogCard.astro";
 import { blogPosts, blogCategories, site } from "../../data/site";
+
+const sortedPosts = [...blogPosts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+const [featured, ...rest] = sortedPosts;
+const totalCount = blogPosts.length;
 ---
 
 <Layout title="Blog" description="News, awards, and construction updates from Swami India Ghana Ltd." image="https://swamiindiaghanaltd.com/wp-content/uploads/2024/06/solaris-1.webp">
@@ -10,27 +15,33 @@ import { blogPosts, blogCategories, site } from "../../data/site";
   <section class="py-28 md:py-36">
     <div class="container-xl grid grid-cols-1 lg:grid-cols-3 gap-16">
       <div class="lg:col-span-2 space-y-16">
-        {blogPosts.map((post) => (
-          <a href={`/blog/${post.slug}`} class="block group">
-            <div class="overflow-hidden rounded-sm mb-7 h-96">
-              <img src={post.image} alt={post.title} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" decoding="async" />
-            </div>
-            <p class="text-xs text-brand uppercase tracking-wide font-semibold mb-3">{post.category} &middot; {post.date}</p>
-            <h2 class="text-3xl font-bold mb-4 group-hover:text-brand transition-colors">{post.title}</h2>
-            <p class="text-lg text-ink-soft leading-relaxed">{post.excerpt}</p>
-            <span class="inline-block mt-5 font-semibold text-brand">Read More &rarr;</span>
-          </a>
-        ))}
+        <div class="pb-14 border-b border-black/10">
+          <BlogCard post={featured} size="lg" />
+        </div>
+
+        <div id="blog-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-14">
+          {rest.map((post) => <BlogCard post={post} />)}
+        </div>
+
+        <p id="blog-empty" class="hidden text-ink-soft text-center py-12">No updates in this category yet.</p>
       </div>
 
       <aside class="space-y-10">
         <div class="bg-surface p-8 rounded-sm">
           <h3 class="font-bold text-lg mb-5">Categories</h3>
-          <ul class="space-y-3">
+          <ul id="blog-categories" class="space-y-1">
+            <li>
+              <button type="button" data-category="All" class="filter-btn active w-full flex justify-between items-center text-left py-2.5 border-b border-black/5 transition-colors">
+                <span>All Updates</span>
+                <span class="text-ink-soft text-sm">({totalCount})</span>
+              </button>
+            </li>
             {blogCategories.map((c) => (
-              <li class="flex justify-between text-ink-soft border-b border-black/5 pb-3">
-                <span>{c.label}</span>
-                <span>({c.count})</span>
+              <li>
+                <button type="button" data-category={c.label} class="filter-btn w-full flex justify-between items-center text-left py-2.5 border-b border-black/5 transition-colors">
+                  <span>{c.label}</span>
+                  <span class="text-ink-soft text-sm">({c.count})</span>
+                </button>
               </li>
             ))}
           </ul>
@@ -55,3 +66,38 @@ import { blogPosts, blogCategories, site } from "../../data/site";
     </div>
   </section>
 </Layout>
+
+<style>
+  .filter-btn.active {
+    color: var(--color-brand);
+    font-weight: 600;
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll(".filter-btn");
+  const grid = document.getElementById("blog-grid");
+  const featured = grid ? grid.previousElementSibling : null;
+  const cards = document.querySelectorAll("#blog-grid > a");
+  const emptyMsg = document.getElementById("blog-empty");
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const category = btn.dataset.category;
+      buttons.forEach((b) => b.classList.toggle("active", b === btn));
+
+      let visibleCount = 0;
+      cards.forEach((card) => {
+        const match = category === "All" || card.dataset.category === category;
+        card.classList.toggle("hidden", !match);
+        if (match) visibleCount++;
+      });
+
+      const featuredLink = featured ? featured.querySelector("a[data-category]") : null;
+      const featuredMatch = category === "All" || (featuredLink && featuredLink.dataset.category === category);
+      if (featured) featured.classList.toggle("hidden", !featuredMatch);
+
+      emptyMsg?.classList.toggle("hidden", visibleCount > 0 || featuredMatch);
+    });
+  });
+</script>

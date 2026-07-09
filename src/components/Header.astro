@@ -50,7 +50,7 @@ import { site, nav } from "../data/site";
       </a>
 
       <nav class="hidden lg:flex items-center gap-9 ml-auto mr-9">
-        {nav.map((item) => (
+        {nav.filter((item) => item.href !== "/contact-us").map((item) => (
           item.children ? (
             <div class="relative group">
               <a href={item.href} class="flex items-center gap-1 font-bold text-sm uppercase tracking-wide py-2 text-white hover:text-brand transition-colors">

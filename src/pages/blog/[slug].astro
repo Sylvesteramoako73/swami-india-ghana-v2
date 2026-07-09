@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
+import BlogCard from "../../components/BlogCard.astro";
 import { blogPosts, blogCategories, projects, site } from "../../data/site";
 
 export function getStaticPaths() {
@@ -13,6 +14,9 @@ export function getStaticPaths() {
 const { post } = Astro.props;
 const relatedProject = projects.find((p) => post.slug.includes(p.slug.split("-")[0]));
 const relatedPosts = blogPosts.filter((p) => p.slug !== post.slug).slice(0, 3);
+
+const words = post.body.join(" ").split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(1, Math.round(words / 200));
 ---
 
 <Layout title={post.title} description={post.excerpt} image={post.image} type="article">
@@ -21,13 +25,21 @@ const relatedPosts = blogPosts.filter((p) => p.slug !== post.slug).slice(0, 3);
   <article class="py-28 md:py-36">
     <div class="container-xl grid grid-cols-1 lg:grid-cols-3 gap-16">
       <div class="lg:col-span-2">
+        <nav class="text-sm text-ink-soft mb-8">
+          <a href="/" class="hover:text-brand transition-colors">Home</a>
+          <span class="mx-2">/</span>
+          <a href="/blog" class="hover:text-brand transition-colors">Blog</a>
+          <span class="mx-2">/</span>
+          <span class="text-ink">{post.category}</span>
+        </nav>
+
         <div class="flex items-center gap-4 mb-8 pb-8 border-b border-black/10">
           <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
             <img src={site.favicon} alt={site.shortName} class="w-7 h-7 object-contain" loading="lazy" decoding="async" />
           </div>
           <div>
             <p class="font-semibold">{site.name}</p>
-            <p class="text-sm text-ink-soft">{post.category} &middot; {post.date}</p>
+            <p class="text-sm text-ink-soft">{post.category} &middot; {post.date} &middot; {minutes} min read</p>
           </div>
         </div>
 
@@ -35,7 +47,7 @@ const relatedPosts = blogPosts.filter((p) => p.slug !== post.slug).slice(0, 3);
 
         {post.body.map((paragraph, i) => (
           i === 0 ? (
-            <p class="text-xl text-ink leading-relaxed mb-6 font-medium">{paragraph}</p>
+            <p class="text-xl text-ink leading-relaxed mb-6 font-medium border-l-4 border-brand pl-6">{paragraph}</p>
           ) : (
             <p class="text-lg text-ink-soft leading-relaxed mb-6">{paragraph}</p>
           )
@@ -54,6 +66,10 @@ const relatedPosts = blogPosts.filter((p) => p.slug !== post.slug).slice(0, 3);
             <a href={site.social.twitter} aria-label="Share on Twitter" class="w-10 h-10 rounded-full bg-surface flex items-center justify-center hover:bg-brand hover:text-white transition-colors">
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 5.9c-.74.33-1.53.55-2.36.65a4.1 4.1 0 001.8-2.27c-.8.47-1.68.82-2.6 1a4.09 4.09 0 00-6.97 3.73A11.6 11.6 0 013 4.9a4.08 4.08 0 001.27 5.46 4.07 4.07 0 01-1.85-.51v.05a4.09 4.09 0 003.28 4.01 4.1 4.1 0 01-1.85.07 4.09 4.09 0 003.82 2.84A8.2 8.2 0 012 18.4a11.57 11.57 0 006.29 1.84c7.55 0 11.68-6.26 11.68-11.68 0-.18 0-.36-.01-.53A8.35 8.35 0 0022 5.9z"/></svg>
             </a>
+            <button id="copy-link-btn" type="button" aria-label="Copy link" class="w-10 h-10 rounded-full bg-surface flex items-center justify-center hover:bg-brand hover:text-white transition-colors relative">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.965-4.11a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+              <span id="copy-link-tooltip" class="hidden absolute -top-9 left-1/2 -translate-x-1/2 bg-ink text-white text-xs px-2.5 py-1 rounded-sm whitespace-nowrap">Copied!</span>
+            </button>
           </div>
         </div>
       </div>
@@ -104,16 +120,18 @@ const relatedPosts = blogPosts.filter((p) => p.slug !== post.slug).slice(0, 3);
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
-        {relatedPosts.map((p) => (
-          <a href={`/blog/${p.slug}`} class="group block">
-            <div class="overflow-hidden rounded-sm mb-5 h-56">
-              <img src={p.image} alt={p.title} class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" decoding="async" />
-            </div>
-            <p class="text-xs text-brand uppercase tracking-wide font-semibold mb-2">{p.category} &middot; {p.date}</p>
-            <h3 class="font-bold text-lg leading-snug group-hover:text-brand transition-colors">{p.title}</h3>
-          </a>
-        ))}
+        {relatedPosts.map((p) => <BlogCard post={p} />)}
       </div>
     </div>
   </section>
 </Layout>
+
+<script>
+  const copyBtn = document.getElementById("copy-link-btn");
+  const tooltip = document.getElementById("copy-link-tooltip");
+  copyBtn?.addEventListener("click", async () => {
+    await navigator.clipboard.writeText(window.location.href);
+    tooltip?.classList.remove("hidden");
+    setTimeout(() => tooltip?.classList.add("hidden"), 1500);
+  });
+</script>
