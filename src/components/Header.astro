@@ -2,8 +2,8 @@
 import { site, nav } from "../data/site";
 ---
 
-<header id="site-header" class="fixed top-0 inset-x-0 z-50 bg-transparent">
-  <div class="absolute inset-0 -z-10 bg-gradient-to-b from-black/55 via-black/25 to-transparent pointer-events-none"></div>
+<header id="site-header" class="fixed top-0 inset-x-0 z-50 bg-transparent transition-colors duration-300">
+  <div id="site-header-glow" class="absolute inset-0 -z-10 bg-gradient-to-b from-black/55 via-black/25 to-transparent pointer-events-none transition-opacity duration-300"></div>
   <div class="hidden lg:block border-b border-white/20 text-sm">
     <div class="container-xl flex items-center justify-between py-2.5 text-white/80">
       <div class="flex items-center gap-4">
@@ -79,3 +79,25 @@ import { site, nav } from "../data/site";
     </div>
   </div>
 </header>
+
+<style>
+  header.is-scrolled {
+    background-color: var(--color-ink);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  }
+</style>
+
+<script>
+  const header = document.getElementById("site-header");
+  const glow = document.getElementById("site-header-glow");
+
+  function onScroll() {
+    const scrolled = window.scrollY > 80;
+    header?.classList.toggle("is-scrolled", scrolled);
+    header?.classList.toggle("bg-transparent", !scrolled);
+    glow?.classList.toggle("opacity-0", scrolled);
+  }
+
+  document.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+</script>
