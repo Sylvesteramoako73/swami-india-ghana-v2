@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import PageHero from "../components/PageHero.astro";
 import TrustSection from "../components/TrustSection.astro";
 import { aboutFeatures, capabilities, mission, vision, milestones, process, site } from "../data/site";
+import CapabilityIcon from "../components/CapabilityIcon.astro";
 ---
 
 <Layout title="About Us" description="Learn about Swami India Ghana Ltd — incorporated in 2013, delivering real estate developments across Accra, Ghana." image="https://swamiindiaghanaltd.com/serenity-estate/wp-content/uploads/2025/03/FIN_GATE_DAY_VIEW-scaled-1.webp">
@@ -59,7 +60,7 @@ import { aboutFeatures, capabilities, mission, vision, milestones, process, site
         {capabilities.map((s) => (
           <div class="bg-white p-10 lg:p-12 hover:shadow-2xl transition-all duration-300 group">
             <div class="w-20 h-20 rounded-full bg-brand/10 flex items-center justify-center mb-8 group-hover:bg-brand transition-colors">
-              <svg class="w-8 h-8 text-brand group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l8-4v18M13 21V11l6 3v7M9 9h.01M9 12h.01M9 15h.01"/></svg>
+              <CapabilityIcon icon={s.icon} class="w-8 h-8 text-brand group-hover:text-white transition-colors" />
             </div>
             <h3 class="text-xl lg:text-2xl font-bold mb-3">{s.title}</h3>
             <p class="text-ink-soft leading-relaxed">{s.text}</p>

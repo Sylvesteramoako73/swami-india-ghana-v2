@@ -71,29 +71,29 @@ export const vision = "To emerge as the most preferred company in the real estat
 
 export const capabilities = [
   {
-    icon: "building",
-    title: "Real Estate Development",
-    text: "Creating sustainable, aesthetically pleasing residential and commercial environments across Accra.",
+    icon: "realestate",
+    title: "Real Estate & Construction",
+    text: "Delivering residential and commercial developments across Accra, from land acquisition through design, civil engineering, and construction.",
   },
   {
-    icon: "invest",
-    title: "Civil Engineering",
-    text: "Skilled engineers executing every project to international construction standards.",
+    icon: "agriculture",
+    title: "Agriculture & Production",
+    text: "Investing in agricultural production and processing through Swami Agri, part of the wider Swami Holdings Group portfolio.",
   },
   {
-    icon: "office",
-    title: "Design & Construction",
-    text: "Creating beautiful, enduring spaces from concept drawings through to handover.",
+    icon: "mining",
+    title: "Mining & Refinery",
+    text: "Extending the Group's reach into mining and mineral refinery operations through Swami Mines and affiliated ventures.",
   },
   {
-    icon: "shield",
-    title: "Leasing",
-    text: "Flexible, transparent leasing terms across our completed residential and commercial units.",
+    icon: "manufacturing",
+    title: "Manufacturing",
+    text: "Supporting industrial manufacturing across the Group through Swami Indus and Mavamar Industries.",
   },
   {
-    icon: "support",
-    title: "Marketing",
-    text: "Customer-first sales support driven by exceptional service and sustainable practices.",
+    icon: "investment",
+    title: "Financial Investment",
+    text: "Deploying capital across the Group's trading and investment interests, including Senegal Trading SA and Senegindia SA.",
   },
 ];
 

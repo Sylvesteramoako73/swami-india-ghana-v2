@@ -1,0 +1,22 @@
+---
+interface Props {
+  icon: string;
+  class?: string;
+}
+const { icon, class: className = "w-8 h-8" } = Astro.props;
+
+type IconKey = "realestate" | "agriculture" | "mining" | "manufacturing" | "investment";
+
+const paths: Record<IconKey, string[]> = {
+  realestate: ["M3 21h18", "M5 21V7l8-4v18", "M13 21V11l6 3v7", "M9 9h.01M9 12h.01M9 15h.01"],
+  agriculture: ["M12 21v-8", "M12 13c0-4-3-5-6-5 0 4 2 6 6 5z", "M12 13c0-4 3-5 6-5 0 4-2 6-6 5z"],
+  mining: ["M3 19l5-9 4 5 3-4 6 8H3z"],
+  manufacturing: ["M3 21V11l5 3v-3l5 3v-3l5 3v7z", "M3 21h18"],
+  investment: ["M4 20V12", "M10 20V7", "M16 20v-5", "M4 9l6-5 4 3 6-5", "M16 2h4v4"],
+};
+
+const key = (icon in paths ? icon : "realestate") as IconKey;
+---
+<svg class={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+  {paths[key].map((d) => <path d={d} />)}
+</svg>
