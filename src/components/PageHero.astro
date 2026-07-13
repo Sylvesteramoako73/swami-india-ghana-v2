@@ -43,7 +43,9 @@ const videoId = getYouTubeId(video);
       : ["flex items-end", tall ? "py-52 md:py-64" : "py-44 md:py-52"],
   ]}
 >
-  <img src={image} alt="" class="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async" />
+  {!videoId && (
+    <img src={image} alt="" class="absolute inset-0 w-full h-full object-cover" loading="lazy" decoding="async" />
+  )}
 
   {videoId && (
     <div id="hero-video-frame" class="absolute inset-0 overflow-hidden pointer-events-none">
