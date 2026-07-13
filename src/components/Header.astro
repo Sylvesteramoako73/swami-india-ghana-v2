@@ -4,7 +4,7 @@ import { site, nav } from "../data/site";
 
 <header id="site-header" class="fixed top-0 inset-x-0 z-50 bg-transparent transition-colors duration-300">
   <div id="site-header-glow" class="absolute inset-0 -z-10 bg-gradient-to-b from-black/55 via-black/25 to-transparent pointer-events-none transition-opacity duration-300"></div>
-  <div class="site-topbar hidden lg:block border-b border-white/20 text-sm transition-colors duration-300">
+  <div class="site-topbar hidden lg:block border-b border-white/20 text-sm">
     <div class="container-xl flex items-center justify-between py-2.5 text-white/80">
       <div class="flex items-center gap-4">
         <a href={site.social.facebook} aria-label="Facebook" class="hover:text-brand transition-colors">
@@ -102,8 +102,15 @@ import { site, nav } from "../data/site";
     background: linear-gradient(120deg, color-mix(in srgb, white 18%, transparent), transparent 45%);
     pointer-events: none;
   }
+  .site-topbar {
+    max-height: 60px;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.25s ease, border-color 0.3s ease;
+  }
   header.is-scrolled .site-topbar {
-    border-color: color-mix(in srgb, white 20%, transparent);
+    max-height: 0;
+    opacity: 0;
+    border-color: transparent;
   }
 </style>
 
