@@ -1,0 +1,92 @@
+---
+// A small CSS-only "document cover" mockup, used wherever we offer the free
+// guide/checklist so the offer has something to actually look at rather than
+// just description text.
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+---
+<div class:list={["doc-preview shrink-0", className]} aria-hidden="true">
+  <div class="doc-preview-page">
+    <div class="doc-preview-bar"></div>
+    <div class="doc-preview-title"></div>
+    <div class="doc-preview-line" style="width: 92%"></div>
+    <div class="doc-preview-line" style="width: 78%"></div>
+    <div class="doc-preview-check"><span>&#10003;</span></div>
+    <div class="doc-preview-check"><span>&#10003;</span></div>
+    <div class="doc-preview-check short"><span>&#10003;</span></div>
+  </div>
+  <div class="doc-preview-page doc-preview-page-behind"></div>
+</div>
+
+<style>
+  .doc-preview {
+    position: relative;
+    width: 84px;
+    height: 104px;
+  }
+  .doc-preview-page {
+    position: absolute;
+    inset: 0;
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.35);
+    padding: 10px 9px;
+  }
+  .doc-preview-page-behind {
+    background: rgba(255, 255, 255, 0.7);
+    transform: rotate(6deg) translate(4px, 2px);
+    z-index: -1;
+    box-shadow: 0 8px 16px -10px rgba(0, 0, 0, 0.3);
+  }
+  .doc-preview-bar {
+    width: 26px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--color-brand);
+    margin-bottom: 6px;
+  }
+  .doc-preview-title {
+    width: 70%;
+    height: 6px;
+    border-radius: 2px;
+    background: rgba(35, 35, 35, 0.55);
+    margin-bottom: 6px;
+  }
+  .doc-preview-line {
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(35, 35, 35, 0.18);
+    margin-bottom: 4px;
+  }
+  .doc-preview-check {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 5px;
+  }
+  .doc-preview-check::after {
+    content: "";
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(35, 35, 35, 0.14);
+  }
+  .doc-preview-check.short::after {
+    max-width: 60%;
+  }
+  .doc-preview-check span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--color-brand);
+    color: white;
+    font-size: 7px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+</style>

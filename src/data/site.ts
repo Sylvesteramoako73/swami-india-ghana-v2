@@ -12,6 +12,8 @@ export const site = {
   addressLine2: "Digital Address: GA-031-0522 · P.O. Box 9060, KIA",
   officeHours: "Monday – Friday, 8:00am – 5:00pm",
   incorporated: "2013",
+  // Placeholder — update with real weekly sales-team capacity.
+  weeklySiteVisitSlots: 5,
   social: {
     facebook: "#",
     instagram: "#",

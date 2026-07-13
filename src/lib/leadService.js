@@ -20,13 +20,16 @@ function buildWhatsAppMessage(payload) {
   if (payload.location) lines.push(`Based in: ${payload.location}`);
   if (payload.visitType) lines.push(`Preferred visit: ${payload.visitType}`);
   if (payload.date) lines.push(`Preferred date: ${payload.date}`);
+  if (payload.tier === "cold" && typeof window !== "undefined") {
+    lines.push(`Guide: ${window.location.origin}/guides/diaspora-buyer-checklist`);
+  }
   return lines.join("\n");
 }
 
 function tierLabel(tier) {
   if (tier === "hot") return "booking a site visit";
   if (tier === "warm") return "a payment plan";
-  return "the portfolio guide";
+  return "the diaspora buyer's guide";
 }
 
 function openWhatsAppFallback(payload) {

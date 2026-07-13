@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import PageHero from "../../components/PageHero.astro";
 import BlogCard from "../../components/BlogCard.astro";
+import DocPreview from "../../components/DocPreview.astro";
 import { blogPosts, blogCategories, projects, site } from "../../data/site";
 
 export function getStaticPaths() {
@@ -67,6 +68,7 @@ const faqSchema = post.faqs && {
             )}
             {i === ctaIndex && (
               <div class="not-prose bg-ink text-white rounded-sm p-8 my-10 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                <DocPreview class="hidden sm:block" />
                 <div class="flex-1">
                   <p class="text-brand font-semibold uppercase tracking-wide text-xs mb-2">Free Guide</p>
                   <h4 class="text-lg font-bold mb-1">The Diaspora Buyer's Guide To Buying Property In Ghana Safely</h4>

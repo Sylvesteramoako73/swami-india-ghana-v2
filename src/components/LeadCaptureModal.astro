@@ -4,6 +4,9 @@
 // visitor's computed intent tier, and swaps to a mobile bottom sheet under
 // 768px. See src/lib/intent.js for the tier/suppression engine and
 // src/lib/leadService.js for the (currently front-end-only) delivery layer.
+import DocPreview from "./DocPreview.astro";
+import { site, awards } from "../data/site";
+
 interface Props {
   pageType?: "project" | "blog" | "other";
   projectName?: string;
@@ -30,9 +33,17 @@ const { pageType = "other", projectName = "", projectSlug = "" } = Astro.props;
       <!-- ============ COLD: free guide ============ -->
       <div class="lc-variant" data-variant="cold">
         <div class="bg-ink text-white px-8 pt-8 pb-6 sm:px-10 sm:pt-10">
-          <p class="text-brand font-semibold uppercase tracking-wide text-xs mb-3">Free Guide</p>
-          <h3 id="lc-heading-cold" class="text-xl sm:text-2xl font-bold leading-tight mb-3">The Diaspora Buyer's Guide To Buying Property In Ghana Safely</h3>
-          <p class="text-white/70 text-sm leading-relaxed">A free checklist covering title verification, payment structuring, and the questions to ask before you send a deposit — built from our experience selling to buyers in the UK, US, and Canada.</p>
+          <div class="flex items-start gap-5">
+            <DocPreview class="mt-1 hidden sm:block" />
+            <div>
+              <p class="text-brand font-semibold uppercase tracking-wide text-xs mb-3">Free Guide</p>
+              <h3 id="lc-heading-cold" class="text-xl sm:text-2xl font-bold leading-tight mb-3">The Diaspora Buyer's Guide To Buying Property In Ghana Safely</h3>
+              <p class="text-white/70 text-sm leading-relaxed">A free checklist covering title verification, payment structuring, and the questions to ask before you send a deposit — built from our experience selling to buyers in the UK, US, and Canada.</p>
+            </div>
+          </div>
+          <p class="text-white/40 text-xs uppercase tracking-wide mt-5 pt-4 border-t border-white/10">
+            Verified by {awards.map((a) => a.name).join(" · ")}
+          </p>
         </div>
         <form class="lc-form p-8 sm:p-10 space-y-4" data-tier="cold" novalidate>
           <input type="hidden" name="tier" value="cold" />
@@ -104,6 +115,7 @@ const { pageType = "other", projectName = "", projectSlug = "" } = Astro.props;
           <p class="text-brand font-semibold uppercase tracking-wide text-xs mb-3">Let's Meet</p>
           <h3 id="lc-heading-hot" class="text-xl sm:text-2xl font-bold leading-tight mb-3">Book A Site Visit</h3>
           <p class="text-white/70 text-sm leading-relaxed">Physical or virtual — our sales team will confirm your slot by WhatsApp within one business day.</p>
+          <p class="text-brand text-xs font-semibold uppercase tracking-wide mt-4">Only {site.weeklySiteVisitSlots} site visit slots available this week</p>
         </div>
         <form class="lc-form p-8 sm:p-10 space-y-4" data-tier="hot" novalidate>
           <input type="hidden" name="tier" value="hot" />
@@ -437,10 +449,13 @@ const { pageType = "other", projectName = "", projectSlug = "" } = Astro.props;
     thankYouActions.innerHTML = "";
 
     if (tier === "cold") {
-      thankYouTitle.textContent = "Your Guide Is On Its Way";
-      thankYouText.textContent = "Check your email — we've also sent it to your WhatsApp. While you're here, see what a payment plan would look like.";
-      const link = pageType === "other" || location.pathname === "/" ? "#calculator" : "/#calculator";
-      thankYouActions.innerHTML = `<a href="${link}" class="btn-primary w-full justify-center inline-flex">See A Payment Plan</a>`;
+      thankYouTitle.textContent = "Your Guide Is Ready";
+      thankYouText.textContent = "We've also sent a copy to your WhatsApp. While you're here, see what a payment plan would look like.";
+      const calcLink = pageType === "other" || location.pathname === "/" ? "#calculator" : "/#calculator";
+      thankYouActions.innerHTML = `
+        <a href="/guides/diaspora-buyer-checklist" target="_blank" rel="noopener" class="btn-primary w-full justify-center inline-flex">View Your Guide</a>
+        <a href="${calcLink}" class="btn-outline w-full justify-center inline-flex !text-ink !border-black/20 hover:!bg-ink hover:!text-white">See A Payment Plan</a>
+      `;
     } else if (tier === "warm") {
       thankYouTitle.textContent = "Your Payment Plan Is On Its Way";
       thankYouText.textContent = "Check your email and WhatsApp for the full breakdown. Ready to see it in person?";
