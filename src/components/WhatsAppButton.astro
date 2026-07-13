@@ -1,13 +1,20 @@
 ---
 import { site } from "../data/site";
 
+interface Props {
+  projectName?: string;
+}
+const { projectName } = Astro.props;
+
 const waNumber = site.phone.replace(/\D/g, "");
 
 function waLink(message: string) {
   return `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
 }
 
-const defaultMessage = `Hi, I'd like to know more about ${site.shortName}'s projects.`;
+const defaultMessage = projectName
+  ? `Hi ${site.shortName}, I'm interested in ${projectName} and would like more information.`
+  : `Hi, I'd like to know more about ${site.shortName}'s projects.`;
 
 const quickReplies = [
   { label: "Browse Our Projects", message: "Hi, I'd like more information about your current projects." },
@@ -101,6 +108,9 @@ const quickReplies = [
 </div>
 
 <script>
+  import { trackWhatsappClicked } from "../lib/intent.js";
+  import { trackEvent } from "../lib/analytics.js";
+
   const root = document.getElementById("wa-chat-root");
   const panel = document.getElementById("wa-chat-panel");
   const toggleBtn = document.getElementById("wa-chat-toggle");
@@ -124,7 +134,13 @@ const quickReplies = [
 
   closeBtn?.addEventListener("click", () => setOpen(false));
 
-  chatLinks.forEach((link) => link.addEventListener("click", () => setOpen(false)));
+  chatLinks.forEach((link) =>
+    link.addEventListener("click", () => {
+      setOpen(false);
+      trackWhatsappClicked();
+      trackEvent("whatsapp_clicked", {});
+    })
+  );
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") setOpen(false);

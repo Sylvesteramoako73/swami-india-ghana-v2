@@ -1,0 +1,545 @@
+---
+// Behaviour-based, tier-aware lead capture. All three tier variants render
+// server-side (hidden); JS picks the right one at trigger time based on the
+// visitor's computed intent tier, and swaps to a mobile bottom sheet under
+// 768px. See src/lib/intent.js for the tier/suppression engine and
+// src/lib/leadService.js for the (currently front-end-only) delivery layer.
+interface Props {
+  pageType?: "project" | "blog" | "other";
+  projectName?: string;
+  projectSlug?: string;
+}
+const { pageType = "other", projectName = "", projectSlug = "" } = Astro.props;
+---
+
+<div
+  id="lc-root"
+  class="hidden fixed inset-0 z-[140] p-4"
+  data-page-type={pageType}
+  data-project-name={projectName}
+  data-project-slug={projectSlug}
+>
+  <div id="lc-backdrop" class="absolute inset-0 bg-ink/70"></div>
+
+  <div id="lc-panel" role="dialog" aria-modal="true" aria-labelledby="lc-heading" class="relative bg-white text-ink flex flex-col rounded-sm overflow-hidden">
+    <button id="lc-close" type="button" aria-label="Close" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white flex items-center justify-center text-ink-soft hover:text-ink shadow transition-colors">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+
+    <div id="lc-scroll" class="overflow-y-auto">
+      <!-- ============ COLD: free guide ============ -->
+      <div class="lc-variant" data-variant="cold">
+        <div class="bg-ink text-white px-8 pt-8 pb-6 sm:px-10 sm:pt-10">
+          <p class="text-brand font-semibold uppercase tracking-wide text-xs mb-3">Free Guide</p>
+          <h3 id="lc-heading-cold" class="text-xl sm:text-2xl font-bold leading-tight mb-3">The Diaspora Buyer's Guide To Buying Property In Ghana Safely</h3>
+          <p class="text-white/70 text-sm leading-relaxed">A free checklist covering title verification, payment structuring, and the questions to ask before you send a deposit — built from our experience selling to buyers in the UK, US, and Canada.</p>
+        </div>
+        <form class="lc-form p-8 sm:p-10 space-y-4" data-tier="cold" novalidate>
+          <input type="hidden" name="tier" value="cold" />
+          <input type="hidden" name="source" value={pageType} />
+          <div>
+            <label for="lc-cold-name" class="sr-only">Your Name</label>
+            <input id="lc-cold-name" name="name" type="text" required placeholder="Your Name" class="lc-input" />
+            <p class="lc-error" data-for="lc-cold-name" role="alert"></p>
+          </div>
+          <div>
+            <label for="lc-cold-email" class="sr-only">Your Email</label>
+            <input id="lc-cold-email" name="email" type="email" required placeholder="Your Email" class="lc-input" />
+            <p class="lc-error" data-for="lc-cold-email" role="alert"></p>
+          </div>
+          <div>
+            <label for="lc-cold-whatsapp" class="sr-only">WhatsApp Number</label>
+            <input id="lc-cold-whatsapp" name="whatsapp" type="tel" required placeholder="WhatsApp Number (e.g. +233 24 000 0000)" class="lc-input" />
+            <p class="lc-error" data-for="lc-cold-whatsapp" role="alert"></p>
+          </div>
+          <div>
+            <label for="lc-cold-location" class="sr-only">Where are you based?</label>
+            <select id="lc-cold-location" name="location" required class="lc-input text-ink-soft">
+              <option value="" disabled selected>Where are you based?</option>
+              <option value="Ghana">Ghana</option>
+              <option value="United Kingdom">United Kingdom</option>
+              <option value="United States">United States</option>
+              <option value="Canada">Canada</option>
+              <option value="Other">Other</option>
+            </select>
+            <p class="lc-error" data-for="lc-cold-location" role="alert"></p>
+          </div>
+          <button type="submit" class="btn-primary w-full justify-center">Get The Free Guide</button>
+        </form>
+      </div>
+
+      <!-- ============ WARM: payment plan ============ -->
+      <div class="lc-variant hidden" data-variant="warm">
+        <div class="bg-ink text-white px-8 pt-8 pb-6 sm:px-10 sm:pt-10">
+          <p class="text-brand font-semibold uppercase tracking-wide text-xs mb-3">Personalised For You</p>
+          <h3 id="lc-heading-warm" class="text-xl sm:text-2xl font-bold leading-tight mb-3">Get Your Personalised Payment Plan</h3>
+          <p class="text-white/70 text-sm leading-relaxed lc-warm-project-text">We'll send a full pricing and payment plan breakdown to your email and WhatsApp — no obligation.</p>
+        </div>
+        <form class="lc-form p-8 sm:p-10 space-y-4" data-tier="warm" novalidate>
+          <input type="hidden" name="tier" value="warm" />
+          <input type="hidden" name="source" value={pageType} />
+          <input type="hidden" name="project" class="lc-project-field" value={projectName} />
+          <div>
+            <label for="lc-warm-name" class="sr-only">Your Name</label>
+            <input id="lc-warm-name" name="name" type="text" required placeholder="Your Name" class="lc-input" />
+            <p class="lc-error" data-for="lc-warm-name" role="alert"></p>
+          </div>
+          <div>
+            <label for="lc-warm-email" class="sr-only">Your Email</label>
+            <input id="lc-warm-email" name="email" type="email" required placeholder="Your Email" class="lc-input" />
+            <p class="lc-error" data-for="lc-warm-email" role="alert"></p>
+          </div>
+          <div>
+            <label for="lc-warm-whatsapp" class="sr-only">WhatsApp Number</label>
+            <input id="lc-warm-whatsapp" name="whatsapp" type="tel" required placeholder="WhatsApp Number (e.g. +233 24 000 0000)" class="lc-input" />
+            <p class="lc-error" data-for="lc-warm-whatsapp" role="alert"></p>
+          </div>
+          <button type="submit" class="btn-primary w-full justify-center">Send Me My Payment Plan</button>
+        </form>
+      </div>
+
+      <!-- ============ HOT: book a site visit ============ -->
+      <div class="lc-variant hidden" data-variant="hot">
+        <div class="bg-ink text-white px-8 pt-8 pb-6 sm:px-10 sm:pt-10">
+          <p class="text-brand font-semibold uppercase tracking-wide text-xs mb-3">Let's Meet</p>
+          <h3 id="lc-heading-hot" class="text-xl sm:text-2xl font-bold leading-tight mb-3">Book A Site Visit</h3>
+          <p class="text-white/70 text-sm leading-relaxed">Physical or virtual — our sales team will confirm your slot by WhatsApp within one business day.</p>
+        </div>
+        <form class="lc-form p-8 sm:p-10 space-y-4" data-tier="hot" novalidate>
+          <input type="hidden" name="tier" value="hot" />
+          <input type="hidden" name="source" value={pageType} />
+          <input type="hidden" name="project" class="lc-project-field" value={projectName} />
+          <div>
+            <label for="lc-hot-name" class="sr-only">Your Name</label>
+            <input id="lc-hot-name" name="name" type="text" required placeholder="Your Name" class="lc-input" />
+            <p class="lc-error" data-for="lc-hot-name" role="alert"></p>
+          </div>
+          <div>
+            <label for="lc-hot-email" class="sr-only">Your Email</label>
+            <input id="lc-hot-email" name="email" type="email" required placeholder="Your Email" class="lc-input" />
+            <p class="lc-error" data-for="lc-hot-email" role="alert"></p>
+          </div>
+          <div>
+            <label for="lc-hot-whatsapp" class="sr-only">WhatsApp Number</label>
+            <input id="lc-hot-whatsapp" name="whatsapp" type="tel" required placeholder="WhatsApp Number (e.g. +233 24 000 0000)" class="lc-input" />
+            <p class="lc-error" data-for="lc-hot-whatsapp" role="alert"></p>
+          </div>
+          <div>
+            <label for="lc-hot-date" class="sr-only">Preferred Date</label>
+            <input id="lc-hot-date" name="date" type="date" required class="lc-input text-ink-soft" />
+            <p class="lc-error" data-for="lc-hot-date" role="alert"></p>
+          </div>
+          <fieldset class="flex gap-3">
+            <legend class="sr-only">Visit type</legend>
+            <label class="lc-toggle flex-1">
+              <input type="radio" name="visitType" value="Physical" class="peer sr-only" />
+              <span class="block text-center border-2 border-black/10 peer-checked:border-brand peer-checked:text-brand rounded-sm py-3 text-sm font-semibold cursor-pointer transition-colors">In Person</span>
+            </label>
+            <label class="lc-toggle flex-1">
+              <input type="radio" name="visitType" value="Virtual" class="peer sr-only" />
+              <span class="block text-center border-2 border-black/10 peer-checked:border-brand peer-checked:text-brand rounded-sm py-3 text-sm font-semibold cursor-pointer transition-colors">Virtual Tour</span>
+            </label>
+          </fieldset>
+          <button type="submit" class="btn-primary w-full justify-center">Book My Visit</button>
+        </form>
+      </div>
+
+      <!-- ============ THANK YOU (shared, filled in by JS) ============ -->
+      <div id="lc-thankyou" class="hidden text-center p-8 sm:p-10" aria-live="polite">
+        <div class="w-16 h-16 rounded-full bg-brand/10 flex items-center justify-center mx-auto mb-5">
+          <svg class="w-8 h-8 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h4 id="lc-thankyou-title" class="text-xl font-bold mb-2">You're All Set</h4>
+        <p id="lc-thankyou-text" class="text-ink-soft leading-relaxed mb-6"></p>
+        <div id="lc-thankyou-actions" class="space-y-3"></div>
+      </div>
+
+      <!-- ============ NETWORK ERROR ============ -->
+      <div id="lc-network-error" class="hidden text-center p-8 sm:p-10" role="alert">
+        <p class="font-semibold mb-2">We couldn't reach our server</p>
+        <p class="text-ink-soft text-sm leading-relaxed mb-6">Your details haven't been lost — check your connection and try again, or reach us directly on WhatsApp.</p>
+        <button type="button" id="lc-retry" class="btn-primary w-full justify-center">Try Again</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  #lc-root.lc-open {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #lc-panel {
+    max-width: 32rem;
+    width: 100%;
+    max-height: 90vh;
+    box-shadow: 0 30px 60px -25px rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  #lc-root.lc-open #lc-panel {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  .lc-input {
+    width: 100%;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    padding: 0.875rem 1.25rem;
+    background: white;
+  }
+  .lc-input:focus {
+    outline: none;
+    border-color: var(--color-brand);
+  }
+  .lc-error {
+    display: none;
+    color: #b91c1c;
+    font-size: 0.75rem;
+    margin-top: 0.375rem;
+  }
+  .lc-error.show {
+    display: block;
+  }
+  .lc-input.lc-invalid {
+    border-color: #b91c1c;
+  }
+
+  @media (max-width: 767px) {
+    #lc-root {
+      padding: 0;
+    }
+    #lc-root.lc-open {
+      align-items: flex-end;
+    }
+    #lc-panel {
+      max-width: none;
+      max-height: 60vh;
+      border-radius: 1rem 1rem 0 0;
+      transform: translateY(100%);
+    }
+    #lc-root.lc-open #lc-panel {
+      transform: translateY(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #lc-panel {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { initSession, trackProjectView, getTier, getState, canShowPrompt, recordPromptShown, recordDismiss, recordConversion, recordLocation } from "../lib/intent.js";
+  import { submitLead } from "../lib/leadService.js";
+  import { trackEvent } from "../lib/analytics.js";
+
+  const root = document.getElementById("lc-root");
+  const backdrop = document.getElementById("lc-backdrop");
+  const panel = document.getElementById("lc-panel");
+  const closeBtn = document.getElementById("lc-close");
+  const scrollArea = document.getElementById("lc-scroll");
+  const variants = document.querySelectorAll(".lc-variant");
+  const thankYou = document.getElementById("lc-thankyou");
+  const thankYouTitle = document.getElementById("lc-thankyou-title");
+  const thankYouText = document.getElementById("lc-thankyou-text");
+  const thankYouActions = document.getElementById("lc-thankyou-actions");
+  const networkError = document.getElementById("lc-network-error");
+  const retryBtn = document.getElementById("lc-retry");
+  const waRoot = document.getElementById("wa-chat-root");
+
+  const pageType = root?.dataset.pageType || "other";
+  const projectName = root?.dataset.projectName || "";
+
+  const isProjectOrBlogPage = pageType === "project" || pageType === "blog";
+  const isMobile = window.matchMedia("(max-width: 767px)").matches;
+  const pageLoadTime = Date.now();
+  const MIN_DELAY_MS = 15000;
+
+  let currentTier = "cold";
+  let promptShownThisLoad = false;
+  let lastSubmittedPayload = null;
+  let activeSeconds = 0;
+  let timeOnPageFired = false;
+  let scrollDepthFired = false;
+  let exitIntentFired = false;
+
+  initSession();
+  if (pageType === "project" && root?.dataset.projectSlug) {
+    trackProjectView(root.dataset.projectSlug);
+  }
+
+  const { estimatorOpened, estimatorCompleted } = getState();
+  document.querySelectorAll(".lc-warm-project-text").forEach((el) => {
+    if (estimatorOpened && !estimatorCompleted) {
+      el.textContent = "Want us to finish that payment plan for you? Leave your details and we'll send the full breakdown by email and WhatsApp.";
+    } else if (projectName) {
+      el.textContent = `We'll send a full pricing and payment plan breakdown for ${projectName} to your email and WhatsApp — no obligation.`;
+    }
+  });
+
+  function showVariant(tier) {
+    variants.forEach((v) => v.classList.toggle("hidden", v.dataset.variant !== tier));
+    thankYou.classList.add("hidden");
+    networkError.classList.add("hidden");
+    variants.forEach((v) => {
+      if (v.dataset.variant === tier) v.classList.remove("hidden");
+    });
+  }
+
+  let lastFocused = null;
+
+  function open(tier, trigger, isManual) {
+    if (!root || root.classList.contains("hidden") === false) return;
+    currentTier = tier;
+    showVariant(tier);
+    lastFocused = document.activeElement;
+    root.classList.remove("hidden");
+    root.classList.add("flex", "lc-open");
+    document.body.style.overflow = "hidden";
+    waRoot?.classList.add("hidden");
+    recordPromptShown();
+    // A manual trigger (inline blog CTA, or any deliberate click) never
+    // counts against the one-automatic-prompt-per-load rule.
+    if (!isManual) promptShownThisLoad = true;
+    trackEvent("prompt_shown", { tier, trigger, page_type: pageType });
+
+    requestAnimationFrame(() => {
+      const firstField = panel?.querySelector(
+        '.lc-variant:not(.hidden) input:not([type="hidden"]), .lc-variant:not(.hidden) select'
+      );
+      firstField?.focus();
+    });
+  }
+
+  function close(dismissed) {
+    if (!root || root.classList.contains("hidden")) return;
+    root.classList.add("hidden");
+    root.classList.remove("flex", "lc-open");
+    document.body.style.overflow = "";
+    waRoot?.classList.remove("hidden");
+    if (dismissed) {
+      recordDismiss();
+      trackEvent("prompt_dismissed", { tier: currentTier, page_type: pageType });
+    }
+    lastFocused?.focus?.();
+  }
+
+  closeBtn?.addEventListener("click", () => close(true));
+  backdrop?.addEventListener("click", () => close(true));
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape" || root?.classList.contains("hidden")) return;
+    close(true);
+  });
+
+  // Minimal focus trap.
+  root?.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab") return;
+    const focusable = panel?.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (!focusable || focusable.length === 0) return;
+    const list = Array.from(focusable).filter((el) => el.offsetParent !== null);
+    const first = list[0];
+    const last = list[list.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+
+  // ---------- Validation ----------
+  function validateField(input) {
+    const errorEl = input.closest("div")?.querySelector(`.lc-error[data-for="${input.id}"]`);
+    let message = "";
+    if (input.validity.valueMissing) {
+      message = "This field is required.";
+    } else if (input.type === "email" && input.validity.typeMismatch) {
+      message = "Enter a valid email address.";
+    } else if (input.type === "tel" && input.value && !/^[+\d][\d\s()-]{6,}$/.test(input.value)) {
+      message = "Enter a valid phone number, with country code if outside Ghana.";
+    }
+    input.classList.toggle("lc-invalid", !!message);
+    if (errorEl) {
+      errorEl.textContent = message;
+      errorEl.classList.toggle("show", !!message);
+    }
+    return !message;
+  }
+
+  document.querySelectorAll(".lc-form input, .lc-form select").forEach((input) => {
+    input.addEventListener("blur", () => validateField(input));
+  });
+
+  // ---------- Submission ----------
+  document.querySelectorAll(".lc-form").forEach((form) => {
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const inputs = Array.from(form.querySelectorAll("input, select")).filter((el) => el.type !== "hidden" && el.type !== "radio");
+      const validRequired = inputs.map((el) => validateField(el)).every(Boolean);
+      const tier = form.dataset.tier;
+      if (tier === "hot" && !form.querySelector('input[name="visitType"]:checked')) {
+        // Default silently to Virtual if nothing chosen (still lets the form submit).
+        const virtualInput = form.querySelector('input[name="visitType"][value="Virtual"]');
+        if (virtualInput) virtualInput.checked = true;
+      }
+      if (!validRequired) return;
+
+      const formData = new FormData(form);
+      const payload = Object.fromEntries(formData.entries());
+      trackEvent("form_submitted", { tier, location: payload.location || null, source: pageType });
+
+      if (payload.location) recordLocation(payload.location);
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      const result = await submitLead(payload);
+      submitBtn.disabled = false;
+
+      if (!result.ok) {
+        variants.forEach((v) => v.classList.add("hidden"));
+        networkError.classList.remove("hidden");
+        lastSubmittedPayload = { form, payload };
+        return;
+      }
+
+      lastSubmittedPayload = null;
+      recordConversion(tier);
+      if (tier === "cold") trackEvent("guide_downloaded", { location: payload.location });
+      if (tier === "hot") trackEvent("visit_booked", { visitType: payload.visitType });
+      showThankYou(tier, payload);
+      form.reset();
+    });
+  });
+
+  retryBtn?.addEventListener("click", async () => {
+    if (!lastSubmittedPayload) return;
+    networkError.classList.add("hidden");
+    const { form, payload } = lastSubmittedPayload;
+    const result = await submitLead(payload);
+    if (result.ok) {
+      lastSubmittedPayload = null;
+      recordConversion(payload.tier);
+      showThankYou(payload.tier, payload);
+      form.reset();
+    } else {
+      networkError.classList.remove("hidden");
+    }
+  });
+
+  function showThankYou(tier, payload) {
+    variants.forEach((v) => v.classList.add("hidden"));
+    networkError.classList.add("hidden");
+    thankYou.classList.remove("hidden");
+    thankYouActions.innerHTML = "";
+
+    if (tier === "cold") {
+      thankYouTitle.textContent = "Your Guide Is On Its Way";
+      thankYouText.textContent = "Check your email — we've also sent it to your WhatsApp. While you're here, see what a payment plan would look like.";
+      const link = pageType === "other" || location.pathname === "/" ? "#calculator" : "/#calculator";
+      thankYouActions.innerHTML = `<a href="${link}" class="btn-primary w-full justify-center inline-flex">See A Payment Plan</a>`;
+    } else if (tier === "warm") {
+      thankYouTitle.textContent = "Your Payment Plan Is On Its Way";
+      thankYouText.textContent = "Check your email and WhatsApp for the full breakdown. Ready to see it in person?";
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn-primary w-full justify-center";
+      btn.textContent = "Book A Site Visit";
+      btn.addEventListener("click", () => {
+        prefillHotForm(payload);
+        showVariant("hot");
+      });
+      thankYouActions.appendChild(btn);
+    } else {
+      thankYouTitle.textContent = "Your Visit Is Booked";
+      thankYouText.textContent = `A member of our sales team will confirm your ${payload.visitType?.toLowerCase() || "visit"} by WhatsApp within one business day.`;
+    }
+  }
+
+  function prefillHotForm(payload) {
+    const hotForm = document.querySelector('.lc-form[data-tier="hot"]');
+    if (!hotForm) return;
+    ["name", "email", "whatsapp"].forEach((field) => {
+      const input = hotForm.querySelector(`[name="${field}"]`);
+      if (input && payload[field]) input.value = payload[field];
+    });
+    const stateLocation = payload.location;
+    if (stateLocation && stateLocation !== "Ghana") {
+      const virtualInput = hotForm.querySelector('input[name="visitType"][value="Virtual"]');
+      if (virtualInput) virtualInput.checked = true;
+    }
+  }
+
+  document.querySelectorAll(".lc-project-field").forEach((el) => {
+    if (projectName) el.value = projectName;
+  });
+
+  // ---------- Trigger gating ----------
+  function isTypingElsewhere() {
+    const active = document.activeElement;
+    if (!active) return false;
+    if (panel?.contains(active)) return false;
+    const tag = active.tagName;
+    return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+  }
+
+  function tryFire(trigger) {
+    if (promptShownThisLoad) return;
+    if (Date.now() - pageLoadTime < MIN_DELAY_MS) return;
+    if (isTypingElsewhere()) return;
+    if (!canShowPrompt()) return;
+    open(getTier(), trigger);
+  }
+
+  // 1. Exit intent (desktop only).
+  if (!isMobile) {
+    document.addEventListener("mouseout", (e) => {
+      if (exitIntentFired) return;
+      if (e.clientY > 0 || e.relatedTarget) return;
+      exitIntentFired = true;
+      tryFire("exit_intent");
+    });
+  }
+
+  // 2 & 3. Scroll depth + active time on page (project/blog pages only).
+  if (isProjectOrBlogPage) {
+    let ticking = false;
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (scrollDepthFired || ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          ticking = false;
+          const doc = document.documentElement;
+          const depth = (window.scrollY + window.innerHeight) / doc.scrollHeight;
+          if (depth >= 0.55) {
+            scrollDepthFired = true;
+            tryFire("scroll_depth");
+          }
+        });
+      },
+      { passive: true }
+    );
+
+    setInterval(() => {
+      if (timeOnPageFired) return;
+      if (document.visibilityState !== "visible") return;
+      activeSeconds += 1;
+      if (activeSeconds >= 50) {
+        timeOnPageFired = true;
+        tryFire("time_on_page");
+      }
+    }, 1000);
+  }
+
+  // 4. Inline blog CTA (and any other manual trigger) — a deliberate click,
+  // not an automatic interruption, so it bypasses suppression/one-per-load.
+  window.addEventListener("sigl:open-lead-capture", (e) => {
+    const detail = e.detail || {};
+    open(detail.tier || getTier(), detail.trigger || "manual", true);
+  });
+</script>

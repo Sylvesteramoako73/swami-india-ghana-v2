@@ -36,13 +36,17 @@ import { site, footerLinks } from "../data/site";
 
     <div>
       <h4 class="text-white font-semibold text-lg mb-5">Stay Updated</h4>
-      <p class="text-sm leading-relaxed mb-4">Subscribe for updates on new project launches and construction milestones.</p>
-      <form class="flex" onsubmit="event.preventDefault()">
-        <input type="email" required placeholder="Your email" class="w-full bg-white/10 border border-white/15 px-4 py-2.5 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-brand" />
-        <button type="submit" class="bg-brand px-4 text-white shrink-0 hover:bg-brand-dark transition-colors" aria-label="Subscribe">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-        </button>
+      <p id="footer-capture-prompt" class="text-sm leading-relaxed mb-4">Subscribe for updates on new project launches and construction milestones.</p>
+      <form id="footer-capture-form" class="space-y-2.5" novalidate>
+        <input type="hidden" name="tier" value="cold" />
+        <input type="hidden" name="source" value="footer" />
+        <label for="footer-email" class="sr-only">Your email</label>
+        <input id="footer-email" name="email" type="email" required placeholder="Your email" class="w-full bg-white/10 border border-white/15 px-4 py-2.5 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-brand" />
+        <label for="footer-whatsapp" class="sr-only">WhatsApp number</label>
+        <input id="footer-whatsapp" name="whatsapp" type="tel" required placeholder="WhatsApp number" class="w-full bg-white/10 border border-white/15 px-4 py-2.5 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-brand" />
+        <button type="submit" class="w-full bg-brand px-4 py-2.5 text-white text-sm font-semibold hover:bg-brand-dark transition-colors">Subscribe</button>
       </form>
+      <p id="footer-capture-success" class="hidden text-sm text-white/70">Thanks — you're on the list.</p>
     </div>
   </div>
 
@@ -69,3 +73,32 @@ import { site, footerLinks } from "../data/site";
     </div>
   </div>
 </footer>
+
+<script>
+  import { recordConversion } from "../lib/intent.js";
+  import { submitLead } from "../lib/leadService.js";
+  import { trackEvent } from "../lib/analytics.js";
+
+  const form = document.getElementById("footer-capture-form") as HTMLFormElement | null;
+  const prompt = document.getElementById("footer-capture-prompt");
+  const success = document.getElementById("footer-capture-success");
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const payload = Object.fromEntries(formData.entries());
+    trackEvent("form_submitted", { tier: "cold", source: "footer" });
+
+    const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    submitBtn.disabled = true;
+    const result = await submitLead(payload);
+    submitBtn.disabled = false;
+
+    if (result.ok) {
+      recordConversion("cold");
+      form.classList.add("hidden");
+      prompt?.classList.add("hidden");
+      success?.classList.remove("hidden");
+    }
+  });
+</script>

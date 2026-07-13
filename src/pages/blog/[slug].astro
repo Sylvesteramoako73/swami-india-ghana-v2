@@ -17,9 +17,22 @@ const relatedPosts = blogPosts.filter((p) => p.slug !== post.slug).slice(0, 3);
 
 const words = post.body.join(" ").split(/\s+/).filter(Boolean).length;
 const minutes = Math.max(1, Math.round(words / 200));
+
+// Inline lead-capture card sits roughly two thirds through the article body.
+const ctaIndex = Math.max(1, Math.floor(post.body.length * 0.66));
+
+const faqSchema = post.faqs && {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: post.faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
 ---
 
-<Layout title={post.title} description={post.excerpt} image={post.image} type="article">
+<Layout title={post.title} description={post.excerpt} image={post.image} type="article" leadPageType="blog">
   <PageHero title={post.title} image={post.image} />
 
   <article class="py-28 md:py-36">
@@ -46,12 +59,49 @@ const minutes = Math.max(1, Math.round(words / 200));
         <img src={post.image} alt={post.title} class="w-full h-96 object-cover rounded-sm mb-10" loading="lazy" decoding="async" />
 
         {post.body.map((paragraph, i) => (
-          i === 0 ? (
-            <p class="text-xl text-ink leading-relaxed mb-6 font-medium border-l-4 border-brand pl-6">{paragraph}</p>
-          ) : (
-            <p class="text-lg text-ink-soft leading-relaxed mb-6">{paragraph}</p>
-          )
+          <>
+            {i === 0 ? (
+              <p class="text-xl text-ink leading-relaxed mb-6 font-medium border-l-4 border-brand pl-6">{paragraph}</p>
+            ) : (
+              <p class="text-lg text-ink-soft leading-relaxed mb-6">{paragraph}</p>
+            )}
+            {i === ctaIndex && (
+              <div class="not-prose bg-ink text-white rounded-sm p-8 my-10 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                <div class="flex-1">
+                  <p class="text-brand font-semibold uppercase tracking-wide text-xs mb-2">Free Guide</p>
+                  <h4 class="text-lg font-bold mb-1">The Diaspora Buyer's Guide To Buying Property In Ghana Safely</h4>
+                  <p class="text-white/70 text-sm leading-relaxed">Title verification, payment structuring, and the questions to ask before you send a deposit.</p>
+                </div>
+                <button
+                  type="button"
+                  class="btn-primary shrink-0 w-full sm:w-auto justify-center"
+                  onclick="window.dispatchEvent(new CustomEvent('sigl:open-lead-capture', { detail: { tier: 'cold', trigger: 'inline_blog_cta' } }))"
+                >
+                  Get The Free Guide
+                </button>
+              </div>
+            )}
+          </>
         ))}
+
+        {post.faqs && (
+          <div class="mt-12 pt-8 border-t border-black/10">
+            <h3 class="text-2xl font-bold mb-6">Frequently Asked</h3>
+            <div class="space-y-3">
+              {post.faqs.map((f) => (
+                <details class="group bg-surface rounded-sm px-6 py-4">
+                  <summary class="font-semibold cursor-pointer list-none flex items-center justify-between gap-4">
+                    {f.q}
+                    <span class="text-brand text-xl leading-none group-open:rotate-45 transition-transform shrink-0">+</span>
+                  </summary>
+                  <p class="text-ink-soft leading-relaxed mt-3">{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {faqSchema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />}
 
         <div class="mt-12 pt-8 border-t border-black/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <a href="/blog" class="font-semibold text-brand hover:text-ink transition-colors">&larr; Back to all updates</a>

@@ -4,10 +4,12 @@ import ProjectHeader from "../components/ProjectHeader.astro";
 import Footer from "../components/Footer.astro";
 import MenuOverlay from "../components/MenuOverlay.astro";
 import WhatsAppButton from "../components/WhatsAppButton.astro";
+import LeadCaptureModal from "../components/LeadCaptureModal.astro";
 import { site } from "../data/site";
 
 interface ProjectData {
   name: string;
+  slug?: string;
   location: string;
   amenities: string[];
   unitTypes: { name: string }[];
@@ -93,6 +95,18 @@ const projectSchema = project && {
     <meta name="twitter:image" content={image} />
 
     {projectSchema && <script type="application/ld+json" set:html={JSON.stringify(projectSchema)} />}
+
+    {import.meta.env.PUBLIC_GA4_ID && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${import.meta.env.PUBLIC_GA4_ID}`}></script>
+        <script define:vars={{ gaId: import.meta.env.PUBLIC_GA4_ID }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag("js", new Date());
+          gtag("config", gaId);
+        </script>
+      </>
+    )}
   </head>
   <body class="bg-white text-ink" style={themeStyle}>
     <ProjectHeader name={title} logo={logo} logoScrolled={logoScrolled} />
@@ -101,6 +115,7 @@ const projectSchema = project && {
       <slot />
     </main>
     <Footer />
-    <WhatsAppButton />
+    <WhatsAppButton projectName={project?.name} />
+    <LeadCaptureModal pageType="project" projectName={project?.name} projectSlug={project?.slug} />
   </body>
 </html>

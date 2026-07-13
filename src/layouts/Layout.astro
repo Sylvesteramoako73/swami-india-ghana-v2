@@ -4,6 +4,7 @@ import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import MenuOverlay from "../components/MenuOverlay.astro";
 import WhatsAppButton from "../components/WhatsAppButton.astro";
+import LeadCaptureModal from "../components/LeadCaptureModal.astro";
 import { site } from "../data/site";
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
   description?: string;
   image?: string;
   type?: "website" | "article";
+  leadPageType?: "blog" | "other";
 }
 
 const {
@@ -18,6 +20,7 @@ const {
   description = "Swami India Ghana Ltd — real estate development, civil engineering, and construction across Accra, Ghana.",
   image = site.logo,
   type = "website",
+  leadPageType = "other",
 } = Astro.props;
 
 const origin = Astro.site ?? new URL(Astro.url.origin);
@@ -68,6 +71,18 @@ const organizationSchema = {
     <meta name="twitter:image" content={image} />
 
     <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+
+    {import.meta.env.PUBLIC_GA4_ID && (
+      <>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${import.meta.env.PUBLIC_GA4_ID}`}></script>
+        <script define:vars={{ gaId: import.meta.env.PUBLIC_GA4_ID }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag() { dataLayer.push(arguments); }
+          gtag("js", new Date());
+          gtag("config", gaId);
+        </script>
+      </>
+    )}
   </head>
   <body class="bg-white text-ink">
     <Header />
@@ -77,5 +92,6 @@ const organizationSchema = {
     </main>
     <Footer />
     <WhatsAppButton />
+    <LeadCaptureModal pageType={leadPageType} />
   </body>
 </html>

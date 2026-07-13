@@ -488,9 +488,52 @@ export const blogCategories = [
   { label: "Company News", count: 1 },
   { label: "Construction Updates", count: 3 },
   { label: "Project Launches", count: 1 },
+  { label: "Buyer Guides", count: 1 },
 ];
 
 export const blogPosts = [
+  {
+    slug: "land-documentation-title-verification-ghana",
+    title: "Land Documentation In Ghana: How To Verify Title Before You Buy",
+    date: "January 2026",
+    category: "Buyer Guides",
+    image: "https://swamiindiaghanaltd.com/wp-content/uploads/2024/06/solaris-1.webp",
+    excerpt: "A practical, no-jargon guide to verifying land title and documentation in Ghana — written for diaspora buyers who can't just drive out to see the site themselves.",
+    body: [
+      "Of every question we get from buyers overseas, one comes up more than all the others combined: how do I know this land is actually clean? Not \"is the finish nice\" or \"is the location good\" — those are easy to check from a photo or a video call. The thing that keeps diaspora buyers up at night is title. Has this plot been sold to someone else too? Is the person signing the papers actually allowed to sell it? Will there be a stranger with a machete standing on \"my\" land the day I finally fly in to see it?",
+      "Those fears are reasonable. Land disputes and multiple sales of the same plot are a real and well-documented problem in parts of Ghana's property market, and they hit diaspora buyers hardest, precisely because distance makes it easy to skip the steps that a local buyer would insist on. This guide walks through what documentation should exist for a legitimate property, and what checks a buyer — local or overseas — can reasonably do before money changes hands.",
+      "Start with the paper trail itself. A legitimate residential property in Ghana should have some combination of a site plan, an indenture (the document recording the transfer of interest in the land), and, increasingly, a Land Title Certificate issued through the Land Title Registration process. These aren't interchangeable — an indenture on its own tells you a transaction happened, not that the seller had good title to transfer in the first place. That's the whole point of the next step.",
+      "Do a search at the Lands Commission. Ghana's Lands Commission maintains records that let you check registered interests against a specific parcel, and a proper search will surface whether the land has already been registered to someone else, whether there's a competing claim on file, or whether the site plan submitted actually corresponds to the physical location being sold. A developer or lawyer conducting this search on your behalf should be able to show you the search report, not just tell you verbally that \"everything is fine.\"",
+      "Trace the root of title, not just the most recent signature. Ask who owned the land before the current seller, and how it moved from a family or stool (customary) allocation into the hands of a private vendor or developer. In much of Greater Accra, land originates from family or stool ownership before being parceled out, and disputes often trace back to that earlier stage — a family principal who sold land that other family members also claim an interest in, for example. A seller who can show a clean, documented chain going back to that original allocation is in a fundamentally different position from one who can only produce a single recent indenture.",
+      "Match names carefully, every time. One of the simplest and most common fraud patterns is a mismatch between the name on the root document and the name of the person actually signing the sale agreement in front of you — a relative, an agent, or someone claiming power of attorney without being able to produce the actual power of attorney document. If someone is signing on behalf of the registered owner, ask to see the notarized power of attorney itself, not just a verbal assurance that they're \"authorized.\"",
+      "For diaspora buyers specifically, distance is the real vulnerability, not the paperwork itself. The documentation checks above are exactly the same whether you live in Accra or in London — what changes is your ability to physically visit the Lands Commission, walk the plot boundaries, or sit across the table from the seller. That's why working with a developer who is already a registered GREDA and GIPC member matters: those memberships don't replace due diligence, but they mean the developer's own land acquisition and documentation practices are subject to industry scrutiny beyond their own say-so, and there's an established body to escalate to if something goes wrong.",
+      "Get a second, independent legal opinion before you send a deposit. This is the step buyers skip most often, usually because they've already built trust with a developer or agent through months of calls and site photos. An independent Ghanaian property lawyer — one you engage yourself, not one recommended exclusively by the seller — reviewing the title search, the indenture, and the site plan before you commit is the cheapest insurance available in this entire process, and it's standard practice for institutional buyers for exactly this reason.",
+      "None of this is meant to make buying property in Ghana sound more dangerous than it is — the overwhelming majority of transactions with established, registered developers go through cleanly. But \"it usually works out\" isn't the standard you'd want applied to the largest purchase most people make in their lives. The steps above are the same ones any careful buyer would take with a Ghanaian property lawyer sitting beside them; the only difference for a diaspora buyer is being deliberate about getting those checks done remotely, rather than skipping them because you can't be there in person.",
+      "We've put the checklist version of everything above — the specific documents to request, the questions to ask a seller directly, and a short glossary of the Ghanaian land-law terms you'll encounter — into a single free download further down this page.",
+    ],
+    faqs: [
+      {
+        q: "What's the difference between an indenture and a Land Title Certificate?",
+        a: "An indenture records a specific transaction — that an interest in land moved from one party to another — but on its own doesn't prove the seller had valid title to transfer. A Land Title Certificate, issued through Ghana's Land Title Registration process, is a stronger form of documentation because it reflects a registered, searchable record of ownership rather than just a private agreement between two parties.",
+      },
+      {
+        q: "Can I verify land title in Ghana without traveling there myself?",
+        a: "Yes. A Lands Commission search can be commissioned through a licensed Ghanaian property lawyer or a registered developer's legal team without the buyer being physically present, and the resulting search report can be reviewed remotely. What you should insist on is seeing the actual search report yourself, not just a verbal confirmation that the land is clear.",
+      },
+      {
+        q: "Why do multiple people sometimes claim to own the same plot in Ghana?",
+        a: "This most often traces back to family or stool (customary) land that was subdivided and sold by different family members or representatives over time, sometimes without full agreement among all parties with an interest in the land. It's also why tracing the root of title back through prior transfers — not just checking the most recent sale — matters so much.",
+      },
+      {
+        q: "Does buying from a GREDA-registered developer guarantee clean title?",
+        a: "No single membership or credential guarantees anything on its own, but GREDA and GIPC registration means a developer's practices are subject to industry oversight beyond their own claims, and gives buyers a body to escalate concerns to. It should be treated as one factor among several — alongside an independent title search and legal review — not a substitute for either.",
+      },
+      {
+        q: "Should I still hire my own lawyer if the developer already has one?",
+        a: "Yes. A developer's in-house or retained lawyer represents the developer's interests, not yours. An independent Ghanaian property lawyer engaged directly by you, reviewing the title search and sale documents before you commit funds, is standard practice for institutional buyers and is worth the modest cost relative to the size of a property purchase.",
+      },
+    ],
+  },
   {
     slug: "nccag-2023-real-estate-company-of-the-year",
     title: "SIGL Named Real Estate Company Of The Year (Luxury) At NCCAG 2023",

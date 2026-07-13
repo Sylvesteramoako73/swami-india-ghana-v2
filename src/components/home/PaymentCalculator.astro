@@ -1,6 +1,6 @@
 ---
 ---
-<section class="py-24 md:py-32">
+<section id="calculator" class="py-24 md:py-32 scroll-mt-24">
   <div class="container-xl">
     <div class="section-head">
       <div>
@@ -52,7 +52,33 @@
             <span class="font-bold text-2xl text-brand" id="calc-result-monthly">GHS 16,667</span>
           </div>
         </div>
-        <a href="/contact-us" class="btn-primary w-full justify-center">Discuss Your Plan</a>
+
+        <div id="calc-capture-wrap">
+          <p class="text-white/80 text-sm mb-4">Want this payment plan sent to you? We'll send the full breakdown by email and WhatsApp — no obligation.</p>
+          <form id="calc-capture-form" class="space-y-3" novalidate>
+            <input type="hidden" name="tier" value="warm" />
+            <input type="hidden" name="source" value="estimator" />
+            <div>
+              <label for="calc-name" class="sr-only">Your Name</label>
+              <input id="calc-name" name="name" type="text" required placeholder="Your Name" class="w-full bg-white/10 border border-white/15 px-4 py-2.5 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-brand" />
+            </div>
+            <div>
+              <label for="calc-email" class="sr-only">Your Email</label>
+              <input id="calc-email" name="email" type="email" required placeholder="Your Email" class="w-full bg-white/10 border border-white/15 px-4 py-2.5 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-brand" />
+            </div>
+            <div>
+              <label for="calc-whatsapp" class="sr-only">WhatsApp Number</label>
+              <input id="calc-whatsapp" name="whatsapp" type="tel" required placeholder="WhatsApp Number" class="w-full bg-white/10 border border-white/15 px-4 py-2.5 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-brand" />
+            </div>
+            <button type="submit" class="btn-primary w-full justify-center">Send Me This Plan</button>
+          </form>
+          <div id="calc-capture-success" class="hidden text-center py-2" aria-live="polite">
+            <p class="font-semibold">Sent!</p>
+            <p class="text-white/60 text-sm mt-1">Check your email and WhatsApp for the full breakdown.</p>
+          </div>
+        </div>
+
+        <a href="/contact-us" class="block text-center text-white/50 text-xs mt-5 hover:text-white transition-colors">Or discuss your plan directly with our sales team &rarr;</a>
         <p class="text-white/40 text-xs leading-relaxed mt-5">
           Illustrative, interest-free estimate for planning purposes only — not a loan offer. Actual pricing and payment plans vary by project and unit type and are confirmed by our sales team.
         </p>
@@ -62,6 +88,10 @@
 </section>
 
 <script>
+  import { trackEstimatorOpened, trackEstimatorCompleted, recordConversion } from "../../lib/intent.js";
+  import { submitLead } from "../../lib/leadService.js";
+  import { trackEvent } from "../../lib/analytics.js";
+
   const priceInput = document.getElementById("calc-price") as HTMLInputElement;
   const downInput = document.getElementById("calc-down") as HTMLInputElement;
   const monthsInput = document.getElementById("calc-months") as HTMLInputElement;
@@ -95,6 +125,44 @@
     resultMonthly!.textContent = formatCurrency(monthly);
   }
 
-  [priceInput, downInput, monthsInput].forEach((input) => input.addEventListener("input", recalculate));
+  let openedTracked = false;
+  function trackOpenOnce() {
+    if (openedTracked) return;
+    openedTracked = true;
+    trackEstimatorOpened();
+    trackEvent("estimator_opened", {});
+  }
+
+  [priceInput, downInput, monthsInput].forEach((input) => {
+    input.addEventListener("input", () => {
+      recalculate();
+      trackOpenOnce();
+    });
+  });
   recalculate();
+
+  const captureForm = document.getElementById("calc-capture-form") as HTMLFormElement;
+  const captureSuccess = document.getElementById("calc-capture-success");
+
+  captureForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(captureForm);
+    const payload = Object.fromEntries(formData.entries()) as Record<string, string>;
+    payload.price = formatCurrency(Number(priceInput.value));
+    payload.monthly = formatCurrency(Number(priceInput.value) * (1 - Number(downInput.value) / 100) / Number(monthsInput.value));
+
+    trackEvent("form_submitted", { tier: "warm", source: "estimator" });
+    const submitBtn = captureForm.querySelector('button[type="submit"]') as HTMLButtonElement;
+    submitBtn.disabled = true;
+    const result = await submitLead(payload);
+    submitBtn.disabled = false;
+
+    if (result.ok) {
+      trackEstimatorCompleted();
+      recordConversion("warm");
+      trackEvent("estimator_completed", {});
+      captureForm.classList.add("hidden");
+      captureSuccess?.classList.remove("hidden");
+    }
+  });
 </script>
