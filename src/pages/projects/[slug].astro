@@ -31,7 +31,7 @@ const constructionUpdates = project.constructionUpdates?.map((u) => ({
 }));
 ---
 
-<ProjectLayout title={project.name} description={project.description} logo={project.logo} image={project.heroImage} project={project} theme={project.theme}>
+<ProjectLayout title={project.name} description={project.description} logo={project.logo} logoScrolled={project.logoScrolled} image={project.heroImage} project={project} theme={project.theme}>
   <PageHero title={project.name} image={project.heroImage} showTitle={false} showBreadcrumb={false} tall tagline={project.tagline} taglineColorClass={project.taglineColorClass ?? "text-[var(--project-accent,#ca9f45)]"} video={project.heroVideo} videoStart={project.heroVideoStart} videoEnd={project.heroVideoEnd} />
 
   <section id="overview" class="py-12 md:py-16 scroll-mt-24">

@@ -4,8 +4,9 @@ import { site } from "../data/site";
 interface Props {
   name: string;
   logo?: string;
+  logoScrolled?: string;
 }
-const { name, logo } = Astro.props;
+const { name, logo, logoScrolled } = Astro.props;
 
 const projectNav = [
   { label: "Home", href: "/" },
@@ -26,7 +27,14 @@ const projectNav = [
           {site.shortName}
         </span>
         {logo ? (
-          <img src={logo} alt={name} class="h-14 md:h-20 w-auto" />
+          logoScrolled ? (
+            <span class="relative inline-block h-14 md:h-20">
+              <img src={logo} alt={name} class="ph-logo-default h-14 md:h-20 w-auto transition-opacity duration-300" />
+              <img src={logoScrolled} alt={name} class="ph-logo-scrolled absolute inset-0 h-full w-auto opacity-0 transition-opacity duration-300" />
+            </span>
+          ) : (
+            <img src={logo} alt={name} class="h-14 md:h-20 w-auto" />
+          )
         ) : (
           <span class="ph-link text-white text-2xl font-bold font-heading">{name}</span>
         )}
@@ -75,6 +83,8 @@ const projectNav = [
   const header = document.getElementById("project-header");
   const glow = document.getElementById("project-header-glow");
   const inner = document.getElementById("project-header-inner");
+  const logoDefault = document.querySelector(".ph-logo-default");
+  const logoScrolled = document.querySelector(".ph-logo-scrolled");
 
   function onScroll() {
     const scrolled = window.scrollY > 80;
@@ -84,6 +94,8 @@ const projectNav = [
     glow?.classList.toggle("opacity-0", scrolled);
     inner?.classList.toggle("py-2.5", scrolled);
     inner?.classList.toggle("py-4", !scrolled);
+    logoDefault?.classList.toggle("opacity-0", scrolled);
+    logoScrolled?.classList.toggle("opacity-0", !scrolled);
   }
 
   document.addEventListener("scroll", onScroll, { passive: true });

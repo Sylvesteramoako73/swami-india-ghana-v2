@@ -25,6 +25,7 @@ interface Props {
   title: string;
   description?: string;
   logo?: string;
+  logoScrolled?: string;
   image?: string;
   project?: ProjectData;
   theme?: ProjectTheme;
@@ -34,6 +35,7 @@ const {
   title,
   description = "Swami India Ghana Ltd — real estate development, civil engineering, and construction across Accra, Ghana.",
   logo,
+  logoScrolled,
   image = site.logo,
   project,
   theme,
@@ -93,7 +95,7 @@ const projectSchema = project && {
     {projectSchema && <script type="application/ld+json" set:html={JSON.stringify(projectSchema)} />}
   </head>
   <body class="bg-white text-ink" style={themeStyle}>
-    <ProjectHeader name={title} logo={logo} />
+    <ProjectHeader name={title} logo={logo} logoScrolled={logoScrolled} />
     <MenuOverlay />
     <main>
       <slot />
