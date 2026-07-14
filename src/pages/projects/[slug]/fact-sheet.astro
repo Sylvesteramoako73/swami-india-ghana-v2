@@ -1,0 +1,93 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { projects, site } from "../../../data/site";
+
+export function getStaticPaths() {
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+---
+
+<Layout
+  title={`${project.name} Fact Sheet`}
+  description={`Unit types, sizes, amenities, and pricing structure for ${project.name} — condensed into one page you can save or print.`}
+  image={project.heroImage}
+>
+  <section class="pt-36 pb-20 md:pt-44 md:pb-28 bg-ink text-white">
+    <div class="container-xl">
+      <p class="text-brand font-semibold uppercase tracking-wide text-xs mb-4">Free Fact Sheet</p>
+      <h1 class="text-3xl md:text-5xl font-bold leading-tight max-w-3xl">{project.name} — Unit Types, Amenities &amp; Pricing Structure</h1>
+      <p class="text-white/70 mt-5 max-w-2xl leading-relaxed">
+        {project.description}
+      </p>
+      <button id="fact-sheet-print-btn" type="button" class="btn-primary mt-8 print:hidden">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V4h12v5M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>
+        Save As PDF / Print
+      </button>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-20">
+    <div class="container-xl max-w-3xl">
+      <div class="flex items-center gap-4 mb-12">
+        <span class:list={["px-4 py-1.5 text-xs font-semibold uppercase tracking-wide rounded-full", project.status === "Completed" ? "bg-brand text-white" : "bg-surface text-ink"]}>{project.status}</span>
+        <span class="text-ink-soft">{project.location}</span>
+      </div>
+
+      <h2 class="text-2xl font-bold mb-6">Unit Types</h2>
+      <div class="space-y-4 mb-16">
+        {project.unitTypes.map((u) => (
+          <div class="bg-surface p-6 rounded-sm">
+            <h4 class="font-bold mb-2">{u.name}</h4>
+            <div class="flex flex-wrap gap-x-8 gap-y-1 text-ink-soft text-sm mb-2">
+              {u.plot !== "—" && <span><span class="font-semibold text-ink">Plot:</span> {u.plot}</span>}
+              {u.built !== "—" && <span><span class="font-semibold text-ink">Built Area:</span> {u.built}</span>}
+            </div>
+            <p class="text-ink-soft text-sm leading-relaxed">{u.details}</p>
+          </div>
+        ))}
+      </div>
+
+      <h2 class="text-2xl font-bold mb-6">Amenities</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-16">
+        {project.amenities.map((a) => (
+          <div class="flex items-center gap-3 bg-white border border-black/10 px-5 py-3 rounded-sm">
+            <svg class="w-4 h-4 text-brand shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <span class="text-ink-soft text-sm font-medium">{a}</span>
+          </div>
+        ))}
+      </div>
+
+      {project.neighborhoodStats && (
+        <>
+          <h2 class="text-2xl font-bold mb-6">Neighbourhood</h2>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-16">
+            {project.neighborhoodStats.map((s) => (
+              <div class="bg-surface rounded-sm px-4 py-6 text-center">
+                <p class="text-2xl font-bold">{s.value}</p>
+                <p class="text-ink-soft text-xs font-semibold mt-1">{s.label}</p>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      <div class="bg-ink text-white p-8 md:p-10 rounded-sm print:hidden">
+        <h3 class="text-xl font-bold mb-3">Ready For Pricing And A Payment Plan?</h3>
+        <p class="text-white/70 mb-6 leading-relaxed">Our sales team can send a full pricing and payment plan breakdown for {project.name}, or walk through it with you directly on WhatsApp.</p>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href={`tel:${site.phone.replace(/\s/g, "")}`} class="btn-primary justify-center flex-1">Call {site.phone}</a>
+          <a href={`/projects/${project.slug}`} class="btn-outline justify-center flex-1 !text-ink !border-black/20 hover:!bg-ink hover:!text-white">Back To {project.name}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  document.getElementById("fact-sheet-print-btn")?.addEventListener("click", () => window.print());
+</script>

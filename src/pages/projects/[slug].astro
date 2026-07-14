@@ -128,7 +128,7 @@ const constructionUpdates = project.constructionUpdates?.map((u) => ({
             </li>
           </ul>
           <a href={`/contact-us?project=${encodeURIComponent(project.name)}`} class="inline-flex items-center justify-center gap-2 w-full bg-[var(--project-cta,#ca9f45)] text-[var(--project-cta-on,#1a1a1a)] font-semibold px-10 py-4 rounded-sm hover:bg-[var(--project-cta-dark,#a27f37)] transition-colors duration-300 uppercase text-sm tracking-wide">Enquire Now</a>
-          <BrochureModal projectName={project.name} />
+          <BrochureModal />
         </div>
 
         {relatedPost && (

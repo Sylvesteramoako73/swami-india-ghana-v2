@@ -5,14 +5,16 @@
 // 768px. See src/lib/intent.js for the tier/suppression engine and
 // src/lib/leadService.js for the (currently front-end-only) delivery layer.
 import DocPreview from "./DocPreview.astro";
-import { site, awards } from "../data/site";
+import { site, awards, projects } from "../data/site";
 
 interface Props {
-  pageType?: "project" | "blog" | "other";
+  pageType?: "project" | "blog" | "home" | "other";
   projectName?: string;
   projectSlug?: string;
 }
 const { pageType = "other", projectName = "", projectSlug = "" } = Astro.props;
+
+const yearsBuilding = new Date().getFullYear() - Number(site.incorporated);
 ---
 
 <div
@@ -36,18 +38,31 @@ const { pageType = "other", projectName = "", projectSlug = "" } = Astro.props;
           <div class="flex items-start gap-5">
             <DocPreview class="mt-1 hidden sm:block" />
             <div>
-              <p class="text-brand font-semibold uppercase tracking-wide text-xs mb-3">Free Guide</p>
-              <h3 id="lc-heading-cold" class="text-xl sm:text-2xl font-bold leading-tight mb-3">The Diaspora Buyer's Guide To Buying Property In Ghana Safely</h3>
-              <p class="text-white/70 text-sm leading-relaxed">A free checklist covering title verification, payment structuring, and the questions to ask before you send a deposit — built from our experience selling to buyers in the UK, US, and Canada.</p>
+              <p class="text-brand font-semibold uppercase tracking-wide text-xs mb-3 lc-cold-project-tag">Free Guide</p>
+              <h3 id="lc-heading-cold" class="text-xl sm:text-2xl font-bold leading-tight mb-3 lc-cold-project-heading">The Diaspora Buyer's Guide To Buying Property In Ghana Safely</h3>
+              <p class="text-white/70 text-sm leading-relaxed lc-cold-project-text">A free checklist covering title verification, payment structuring, and the questions to ask before you send a deposit — built from our experience selling to buyers in the UK, US, and Canada.</p>
             </div>
           </div>
-          <p class="text-white/40 text-xs uppercase tracking-wide mt-5 pt-4 border-t border-white/10">
+          <div class="flex items-center gap-5 mt-5 pt-4 border-t border-white/10">
+            <div>
+              <p class="text-lg font-bold leading-none">{yearsBuilding}+</p>
+              <p class="text-white/50 text-[0.65rem] uppercase tracking-wide mt-1">Years In Ghana</p>
+            </div>
+            <div class="w-px h-8 bg-white/10"></div>
+            <div>
+              <p class="text-lg font-bold leading-none">{projects.length}+</p>
+              <p class="text-white/50 text-[0.65rem] uppercase tracking-wide mt-1">Developments</p>
+            </div>
+          </div>
+          <p class="text-white/40 text-xs uppercase tracking-wide mt-4">
             Verified by {awards.map((a) => a.name).join(" · ")}
           </p>
         </div>
         <form class="lc-form p-8 sm:p-10 space-y-4" data-tier="cold" novalidate>
           <input type="hidden" name="tier" value="cold" />
           <input type="hidden" name="source" value={pageType} />
+          <input type="hidden" name="project" class="lc-project-field" value={projectName} />
+          <input type="hidden" name="projectSlug" class="lc-project-slug-field" value={projectSlug} />
           <div>
             <label for="lc-cold-name" class="sr-only">Your Name</label>
             <input id="lc-cold-name" name="name" type="text" required placeholder="Your Name" class="lc-input" />
@@ -264,8 +279,9 @@ const { pageType = "other", projectName = "", projectSlug = "" } = Astro.props;
 
   const pageType = root?.dataset.pageType || "other";
   const projectName = root?.dataset.projectName || "";
+  const projectSlug = root?.dataset.projectSlug || "";
 
-  const isProjectOrBlogPage = pageType === "project" || pageType === "blog";
+  const isEngagementPage = pageType === "project" || pageType === "blog" || pageType === "home";
   const isMobile = window.matchMedia("(max-width: 767px)").matches;
   const pageLoadTime = Date.now();
   const MIN_DELAY_MS = 15000;
@@ -291,6 +307,14 @@ const { pageType = "other", projectName = "", projectSlug = "" } = Astro.props;
       el.textContent = `We'll send a full pricing and payment plan breakdown for ${projectName} to your email and WhatsApp — no obligation.`;
     }
   });
+
+  if (pageType === "project" && projectName) {
+    document.querySelectorAll(".lc-cold-project-tag").forEach((el) => (el.textContent = "Free Fact Sheet + Guide"));
+    document.querySelectorAll(".lc-cold-project-heading").forEach((el) => (el.textContent = `${projectName} Fact Sheet & The Diaspora Buyer's Guide`));
+    document.querySelectorAll(".lc-cold-project-text").forEach(
+      (el) => (el.textContent = `A free ${projectName} fact sheet — unit types, sizes, and amenities — plus our checklist covering title verification and payment structuring before you send a deposit.`)
+    );
+  }
 
   function showVariant(tier) {
     variants.forEach((v) => v.classList.toggle("hidden", v.dataset.variant !== tier));
@@ -449,11 +473,16 @@ const { pageType = "other", projectName = "", projectSlug = "" } = Astro.props;
     thankYouActions.innerHTML = "";
 
     if (tier === "cold") {
-      thankYouTitle.textContent = "Your Guide Is Ready";
-      thankYouText.textContent = "We've also sent a copy to your WhatsApp. While you're here, see what a payment plan would look like.";
       const calcLink = pageType === "other" || location.pathname === "/" ? "#calculator" : "/#calculator";
+      const projectSlugSubmitted = payload.projectSlug || projectSlug;
+      thankYouTitle.textContent = pageType === "project" && projectSlugSubmitted ? "Your Fact Sheet Is Ready" : "Your Guide Is Ready";
+      thankYouText.textContent = "We've also sent a copy to your WhatsApp. While you're here, see what a payment plan would look like.";
+      const primaryLink =
+        pageType === "project" && projectSlugSubmitted
+          ? `<a href="/projects/${projectSlugSubmitted}/fact-sheet" target="_blank" rel="noopener" class="btn-primary w-full justify-center inline-flex">View The Fact Sheet</a>`
+          : `<a href="/guides/diaspora-buyer-checklist" target="_blank" rel="noopener" class="btn-primary w-full justify-center inline-flex">View Your Guide</a>`;
       thankYouActions.innerHTML = `
-        <a href="/guides/diaspora-buyer-checklist" target="_blank" rel="noopener" class="btn-primary w-full justify-center inline-flex">View Your Guide</a>
+        ${primaryLink}
         <a href="${calcLink}" class="btn-outline w-full justify-center inline-flex !text-ink !border-black/20 hover:!bg-ink hover:!text-white">See A Payment Plan</a>
       `;
     } else if (tier === "warm") {
@@ -491,6 +520,9 @@ const { pageType = "other", projectName = "", projectSlug = "" } = Astro.props;
   document.querySelectorAll(".lc-project-field").forEach((el) => {
     if (projectName) el.value = projectName;
   });
+  document.querySelectorAll(".lc-project-slug-field").forEach((el) => {
+    if (projectSlug) el.value = projectSlug;
+  });
 
   // ---------- Trigger gating ----------
   function isTypingElsewhere() {
@@ -519,8 +551,8 @@ const { pageType = "other", projectName = "", projectSlug = "" } = Astro.props;
     });
   }
 
-  // 2 & 3. Scroll depth + active time on page (project/blog pages only).
-  if (isProjectOrBlogPage) {
+  // 2 & 3. Scroll depth + active time on page (project/blog/home pages only).
+  if (isEngagementPage) {
     let ticking = false;
     window.addEventListener(
       "scroll",

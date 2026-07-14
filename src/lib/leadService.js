@@ -21,6 +21,9 @@ function buildWhatsAppMessage(payload) {
   if (payload.visitType) lines.push(`Preferred visit: ${payload.visitType}`);
   if (payload.date) lines.push(`Preferred date: ${payload.date}`);
   if (payload.tier === "cold" && typeof window !== "undefined") {
+    if (payload.projectSlug) {
+      lines.push(`Fact Sheet: ${window.location.origin}/projects/${payload.projectSlug}/fact-sheet`);
+    }
     lines.push(`Guide: ${window.location.origin}/guides/diaspora-buyer-checklist`);
   }
   return lines.join("\n");
@@ -41,7 +44,7 @@ function openWhatsAppFallback(payload) {
 
 /**
  * Submit a captured lead.
- * payload: { tier, name, email, whatsapp, location?, project?, unit?, date?, visitType?, source }
+ * payload: { tier, name, email, whatsapp, location?, project?, projectSlug?, unit?, date?, visitType?, source }
  * Returns { ok: boolean, error?: unknown }
  */
 export async function submitLead(payload) {
