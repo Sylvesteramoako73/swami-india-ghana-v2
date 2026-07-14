@@ -288,7 +288,7 @@ export const projects = [
   {
     slug: "springfield-estate",
     name: "Springfield Estate",
-    status: "Ongoing",
+    status: "Completed",
     location: "Prampram, Greater Accra",
     tagline: "Mixed-Use Serviced Plots",
     description: "Springfield Estate is an exclusive residential community offering mixed-use serviced plots, world-class recreational facilities, and a secure gated environment.",
