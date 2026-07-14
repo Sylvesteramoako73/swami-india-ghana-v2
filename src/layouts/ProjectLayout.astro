@@ -45,11 +45,7 @@ const {
 
 const themeStyle = theme
   ? `--project-accent:${theme.accent};--project-on-accent:${theme.onAccent};--project-cta:${theme.cta};--project-cta-dark:${theme.ctaDark};--project-cta-on:${theme.ctaOn};`
-  : "";
-// Each project has its own icon-mark cursor (cropped from its logo) so the
-// cursor stays on-brand per project instead of falling back to the SIGL mark.
-const cursorStyle = project?.slug ? `cursor:url(/cursor-${project.slug}.png) 12 12, auto;` : "";
-const bodyStyle = `${themeStyle}${cursorStyle}` || undefined;
+  : undefined;
 
 const origin = Astro.site ?? new URL(Astro.url.origin);
 const canonicalURL = new URL(Astro.url.pathname, origin);
@@ -112,7 +108,7 @@ const projectSchema = project && {
       </>
     )}
   </head>
-  <body class="bg-white text-ink" style={bodyStyle}>
+  <body class="bg-white text-ink" style={themeStyle}>
     <ProjectHeader name={title} logo={logo} logoScrolled={logoScrolled} />
     <MenuOverlay />
     <main>
