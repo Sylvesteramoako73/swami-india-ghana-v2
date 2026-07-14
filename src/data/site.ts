@@ -250,7 +250,6 @@ export const projects = [
     heroVideoStart: 6,
     heroVideoEnd: 37,
     logo: "/solarium-logo.png",
-    logoScrolled: "/solarium-logo-white.png",
     gallery: [
       "https://swamiindiaghanaltd.com/solarium-apartment/wp-content/uploads/2023/12/E.Lobby_Cam_01_LOW.png",
       "https://swamiindiaghanaltd.com/solarium-apartment/wp-content/uploads/2023/12/Master-Bedroom_LOW.png",
