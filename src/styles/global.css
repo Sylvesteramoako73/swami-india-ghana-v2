@@ -20,7 +20,7 @@
   body {
     font-family: var(--font-body);
     color: var(--color-ink);
-    cursor: url("/cursor-logo.png") 32 32, auto;
+    cursor: url("/cursor-logo.png") 12 12, auto;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
